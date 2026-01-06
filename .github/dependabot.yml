@@ -1,3 +1,4 @@
+version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
@@ -5,3 +6,6 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "tailwindcss"
+      - dependency-name: "@types/node"
+      - dependency-name: "globals"
+      - dependency-name: "recharts"
