@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
 import Layout from '@/routes/Layout';
-import Report from '@/pages/ReportPage';
 
 export const router = createBrowserRouter([
   {
@@ -16,7 +15,10 @@ export const router = createBrowserRouter([
       },
       {
         path: 'report',
-        element: <Report />,
+        lazy: async () => {
+          const { default: Report } = await import('@/pages/ReportPage');
+          return { element: <Report /> };
+        },
       },
     ],
   },
