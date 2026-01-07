@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: 'report',
+        path: 'report/:id',
         lazy: async () => {
           const { default: Report } = await import('@/pages/ReportPage');
           return { element: <Report /> };
