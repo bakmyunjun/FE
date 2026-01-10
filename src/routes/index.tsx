@@ -5,6 +5,14 @@ import Layout from '@/routes/Layout';
 
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    lazy: async () => {
+      const { default: LoginPage } = await import('@/pages/LoginPage');
+      return { element: <LoginPage /> };
+    },
+  },
+
+  {
     path: '/',
     element: <Layout />,
     errorElement: <NotFound />,
