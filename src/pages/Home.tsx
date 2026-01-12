@@ -12,25 +12,24 @@ function StatCard({
   return (
     <div className="rounded-2xl border bg-white p-6 shadow-sm">
       <p className="text-sm text-muted-foreground">{title}</p>
-      <p className="mt-2 text-2xl font-bold">{value}</p>
+      <p className="mt-2 text-2xl font-bold first:text-orange-400">{value}</p>
       <p className="mt-1 text-sm text-muted-foreground">{sub}</p>
     </div>
   );
 }
+<div className="rounded-2xl bg-gradient-to-r from-black/80 via-black/50 to-black/20 p-6 text-white"></div>;
 
 export default function Home() {
   return (
     <div className="flex flex-col gap-6">
       {/* 프로필 요약 */}
-      <Card className="bg-cyan-50">
-        <CardContent className="flex flex-row gap-2">
-          <div className="h-16 w-16 rounded-full bg-gray-300" />
+      <Card className="bg-gradient-to-b from-neutral-800 to-neutral-500 text-white">
+        <CardContent className="flex flex-row items-center gap-4 pt-6">
+          <div className="h-14 w-14 rounded-full bg-gray-300" />
           <div>
             <p className="text-xl font-bold">hochoi8621</p>
-            <p className="text-sm text-muted-foreground">
-              hochoi8621@gmail.com
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-sm text-gray-200">hochoi8621@gmail.com</p>
+            <p className="mt-1 text-sm text-gray-200">
               총 5회 연습 · 평균 68점
             </p>
           </div>
@@ -38,7 +37,7 @@ export default function Home() {
       </Card>
 
       {/* 통계 카드 4개 */}
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-4">
+      <section className="grid grid-cols-4 gap-6 md:grid-rows-4">
         <StatCard title="최근 점수" value="78" sub="+6점" />
         <StatCard title="평균 점수" value="68" sub="전체 세션 기준" />
         <StatCard title="총 세션" value="5" sub="완료된 연습" />
