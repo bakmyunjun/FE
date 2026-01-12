@@ -1,23 +1,36 @@
 import { Card, CardContent } from '@/components/ui/card';
 
-function StatCard({
-  title,
-  value,
-  sub,
-}: {
+import type { LucideIcon } from 'lucide-react';
+import {
+  TrendingUp,
+  BarChart3,
+  CalendarDays,
+  MessageSquare,
+} from 'lucide-react';
+
+interface StatCardProps {
   title: string;
   value: string;
   sub: string;
-}) {
+  icon: LucideIcon;
+}
+
+export function StatCard({ title, value, sub, icon: Icon }: StatCardProps) {
   return (
     <div className="rounded-2xl border bg-white p-6 shadow-sm">
-      <p className="text-sm text-muted-foreground">{title}</p>
-      <p className="mt-2 text-2xl font-bold first:text-orange-400">{value}</p>
+      <div className="flex items-center gap-4">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+          <Icon className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <p className="text-sm text-muted-foreground">{title}</p>
+      </div>
+
+      <p className="mt-2 text-2xl font-bold">{value}</p>
+
       <p className="mt-1 text-sm text-muted-foreground">{sub}</p>
     </div>
   );
 }
-<div className="rounded-2xl bg-gradient-to-r from-black/80 via-black/50 to-black/20 p-6 text-white"></div>;
 
 export default function Home() {
   return (
@@ -38,10 +51,25 @@ export default function Home() {
 
       {/* 통계 카드 4개 */}
       <section className="grid grid-cols-4 gap-6 md:grid-rows-4">
-        <StatCard title="최근 점수" value="78" sub="+6점" />
-        <StatCard title="평균 점수" value="68" sub="전체 세션 기준" />
-        <StatCard title="총 세션" value="5" sub="완료된 연습" />
-        <StatCard title="총 답변" value="48" sub="개의 질문 완료" />
+        <StatCard title="최근 점수" value="78" sub="+6점" icon={TrendingUp} />
+        <StatCard
+          title="평균 점수"
+          value="68"
+          sub="전체 세션 기준"
+          icon={BarChart3}
+        />
+        <StatCard
+          title="총 세션"
+          value="5"
+          sub="완료된 연습"
+          icon={CalendarDays}
+        />
+        <StatCard
+          title="총 답변"
+          value="48"
+          sub="개의 질문 완료"
+          icon={MessageSquare}
+        />
       </section>
 
       {/* 차트 영역 */}
