@@ -1,3 +1,4 @@
+import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
 import { Suspense } from 'react';
 import { Outlet } from 'react-router';
@@ -12,8 +13,7 @@ export default function Layout() {
           <Outlet />
         </Suspense>
       </main>
-
-      <footer className="flex h-14 items-center border-t px-6">푸터</footer>
+      <Footer />
     </div>
   );
 }

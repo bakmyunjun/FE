@@ -1,4 +1,5 @@
 import { InterviewRecordItem } from '@/components/home/interview-record-item';
+
 import { StatCard } from '@/components/home/stat-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -10,7 +11,6 @@ import {
   BarChart3,
   CalendarDays,
   MessageSquare,
-  ChevronRightIcon,
   SearchIcon,
   Filter,
 } from 'lucide-react';
@@ -94,6 +94,7 @@ export default function Home() {
             </Button>
           </div>
         </CardHeader>
+        {/* 면접 기록*/}
         <section className="flex flex-col gap-4 p-6">
           {interviewRecords.map((record) => (
             <InterviewRecordItem key={record.id} record={record} />
