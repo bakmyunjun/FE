@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -73,15 +73,19 @@ export default function Home() {
       </section>
 
       {/* 차트 영역 */}
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <section className="grid grid-cols-2 gap-6 md:grid-rows-2">
         <Card>
-          <h3 className="mb-4 font-semibold">점수 추이</h3>
-          <div className="h-[240px] rounded-md bg-gray-100" />
+          <CardHeader className="font-semibold">점수 추이</CardHeader>
+          <CardContent>
+            <div className="h-[240px] rounded-md bg-gray-100" />
+          </CardContent>
         </Card>
 
         <Card>
-          <h3 className="mb-4 font-semibold">최근 세션 역량 분석</h3>
-          <div className="h-[240px] rounded-md bg-gray-100" />
+          <CardHeader className="font-semibold">최근 섹션 역량 분석</CardHeader>
+          <CardContent>
+            <div className="h-[240px] rounded-md bg-gray-100" />
+          </CardContent>
         </Card>
       </section>
 
