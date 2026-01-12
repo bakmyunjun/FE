@@ -1,36 +1,19 @@
+import { InterviewRecordItem } from '@/components/home/interview-record-item';
+import { StatCard } from '@/components/home/stat-card';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { interviewRecords } from '@/lib/mock';
 
-import type { LucideIcon } from 'lucide-react';
 import {
   TrendingUp,
   BarChart3,
   CalendarDays,
   MessageSquare,
+  ChevronRightIcon,
+  SearchIcon,
+  Filter,
 } from 'lucide-react';
-
-interface StatCardProps {
-  title: string;
-  value: string;
-  sub: string;
-  icon: LucideIcon;
-}
-
-export function StatCard({ title, value, sub, icon: Icon }: StatCardProps) {
-  return (
-    <div className="rounded-2xl border bg-white p-6 shadow-sm">
-      <div className="flex items-center gap-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-          <Icon className="h-4 w-4 text-muted-foreground" />
-        </div>
-        <p className="text-sm text-muted-foreground">{title}</p>
-      </div>
-
-      <p className="mt-2 text-2xl font-bold">{value}</p>
-
-      <p className="mt-1 text-sm text-muted-foreground">{sub}</p>
-    </div>
-  );
-}
 
 export default function Home() {
   return (
@@ -67,7 +50,7 @@ export default function Home() {
         <StatCard
           title="총 답변"
           value="48"
-          sub="개의 질문 완료"
+          sub="6개의 질문 완료"
           icon={MessageSquare}
         />
       </section>
@@ -91,22 +74,31 @@ export default function Home() {
 
       {/* 면접 기록 */}
       <Card>
-        <h3 className="mb-4 font-semibold">면접 기록</h3>
+        <CardHeader className="flex flex-row items-center justify-between pb-0">
+          <h3 className="text-lg font-semibold">면접 기록</h3>
+          <div className="flex items-center gap-3">
+            {/* 검색 */}
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="검색..."
+                className="h-9 w-[180px] pl-9 pr-3 text-sm shadow-none"
+              />
+              <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            </div>
 
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 font-bold">
-              78
-            </div>
-            <div>
-              <p className="font-medium">2024-12-28</p>
-              <p className="text-sm text-muted-foreground">
-                10/10 질문 완료 · 18분 32초
-              </p>
-            </div>
+            {/* 필터*/}
+            <Button variant="outline" className="flex h-9 items-center gap-2">
+              <Filter className="h-4 w-4" />
+              전체
+            </Button>
           </div>
-          <span className="text-sm text-muted-foreground">›</span>
-        </div>
+        </CardHeader>
+        <section className="flex flex-col gap-4 p-6">
+          {interviewRecords.map((record) => (
+            <InterviewRecordItem key={record.id} record={record} />
+          ))}
+        </section>
       </Card>
     </div>
   );
