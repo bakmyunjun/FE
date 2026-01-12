@@ -17,7 +17,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-3">
       {/* 프로필 요약 */}
       <Card className="bg-gradient-to-b from-neutral-800 to-neutral-500 text-white">
         <CardContent className="flex flex-row items-center gap-4 pt-6">
@@ -33,7 +33,7 @@ export default function Home() {
       </Card>
 
       {/* 통계 카드 4개 */}
-      <section className="grid grid-cols-4 gap-6 md:grid-rows-4">
+      <section className="grid grid-cols-4 gap-6">
         <StatCard title="최근 점수" value="78" sub="+6점" icon={TrendingUp} />
         <StatCard
           title="평균 점수"
@@ -56,7 +56,7 @@ export default function Home() {
       </section>
 
       {/* 차트 영역 */}
-      <section className="grid grid-cols-2 gap-6 md:grid-rows-2">
+      <section className="grid grid-cols-2 gap-6">
         <Card>
           <CardHeader className="font-semibold">점수 추이</CardHeader>
           <CardContent>
