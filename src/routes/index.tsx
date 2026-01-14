@@ -28,4 +28,12 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
+  {
+    path: 'interview',
+    lazy: async () => {
+      const { default: InterviewPage } = await import('@/pages/InterviewPage');
+      return { element: <InterviewPage /> };
+    },
+  },
 ]);
