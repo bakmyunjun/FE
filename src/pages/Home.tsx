@@ -1,6 +1,6 @@
-import { InterviewRecordItem } from '@/components/home/interview-record-item';
+import { InterviewRecordItem } from '@/components/home/InterviewRecordItem';
 
-import { StatCard } from '@/components/home/stat-card';
+import { StatCard } from '@/components/home/StatCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

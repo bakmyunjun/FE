@@ -2,7 +2,7 @@ import type { InterviewRecord } from '@/lib/mock';
 import { ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import Metric from '@/components/home/InterviewMetric';
-import TagSection from '@/components/home/interview-tag-section';
+import TagSection from '@/components/home/InterviewTagSection';
 
 interface Props {
   record: InterviewRecord;
