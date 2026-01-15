@@ -1,3 +1,19 @@
+import ReportHeader from '@/components/report/ReportHeader';
+
 export default function Report() {
-  return <div>면접 결과 레포트</div>;
+  return (
+    <div>
+      <ReportHeader />
+      <Tabs defaultValue="account" className="w-[400px]">
+        <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="password">Password</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">
+          Make changes to your account here.
+        </TabsContent>
+        <TabsContent value="password">Change your password here.</TabsContent>
+      </Tabs>
+    </div>
+  );
 }
