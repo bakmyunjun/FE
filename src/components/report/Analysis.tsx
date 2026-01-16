@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EyeIcon, MessagesSquare, Volume2 } from 'lucide-react';
 import ProgressRow from '@/components/report/component/ProgressRow';
 import TextPatternItem from '@/components/report/component/TextPatternItem';
+import { Progress } from '@/components/ui/progress';
 
 export default function Analysis() {
   return (
@@ -44,10 +45,12 @@ export default function Analysis() {
               <EyeIcon className="h-4 w-4" />
               시선 이동률
             </div>
-            {/* TODO: shadcn-ui 프로그래스로 변경 */}
-            <div className="h-2 w-full rounded-full bg-muted">
-              <div className="h-2 w-[32%] rounded-full bg-emerald-500" />
-            </div>
+            <Progress
+              value={68}
+              className="w-full bg-muted"
+              indicatorClassName="bg-emerald-500"
+            />
+
             <p className="text-xs text-muted-foreground">
               이동이 잦은 구간: 질문 3, 7, 9
             </p>
@@ -69,9 +72,11 @@ export default function Analysis() {
 
             <div>
               <ProgressRow label="침묵 비율" value="15%" />
-              <div className="mt-2 h-2 w-full rounded-full bg-muted">
-                <div className="h-2 w-[15%] rounded-full bg-blue-500" />
-              </div>
+              <Progress
+                value={25}
+                className="w-full bg-muted"
+                indicatorClassName="bg-blue-500"
+              />
             </div>
           </div>
           {/* 턴별 지표 */}
