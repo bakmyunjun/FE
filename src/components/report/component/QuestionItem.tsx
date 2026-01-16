@@ -1,8 +1,10 @@
-type Quality = '좋음' | '보통';
+import { Badge } from '@/components/ui/badge';
+
+type Quality = 'GOOD' | 'NORMAL';
 
 const badgeVariant: Record<Quality, string> = {
-  좋음: 'bg-amber-100 text-amber-700',
-  보통: 'bg-blue-100 text-blue-700',
+  GOOD: 'bg-amber-100 text-amber-700',
+  NORMAL: 'bg-blue-100 text-blue-700',
 };
 
 export default function QuestionItem({
@@ -22,10 +24,8 @@ export default function QuestionItem({
       </div>
 
       {quality && (
-        <Badge
-          className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${badgeVariant[quality]}`}
-        >
-          {quality}
+        <Badge className={`self-center ${badgeVariant[quality]}`}>
+          {quality === 'GOOD' ? '좋음' : '보통'}
         </Badge>
       )}
     </div>

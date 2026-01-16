@@ -21,19 +21,19 @@ export default function Coaching() {
           <QuestionItem
             question="약점을 극복하기 위해 어떤 노력을 하고 있나요?"
             description="자기 개발 의지를 확인할 수 있으나, 더 구체적인 계획 유도 가능"
-            quality="좋음"
+            quality="GOOD"
           />
 
           <QuestionItem
             question="그 목표를 달성하기 위한 구체적인 계획이 있나요?"
             description="목표 지향성을 평가하나, 실행 가능성 검증 질문 추가 필요"
-            quality="좋음"
+            quality="NORMAL"
           />
 
           <QuestionItem
             question="입사 후 가장 먼저 하고 싶은 일은 무엇인가요?"
             description="열정을 확인할 수 있으나, 회사에 대한 이해도를 더 깊게 평가하는 질문 권장"
-            quality="보통"
+            quality="GOOD"
           />
         </CardContent>
       </Card>
