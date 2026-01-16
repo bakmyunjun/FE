@@ -38,8 +38,12 @@ export function InterviewRecordItem({ record }: Props) {
 
       {/* 강점, 개선점 */}
       <div className="mt-5 grid grid-cols-2 gap-8">
-        <TagSection title="강점" tags={record.strengths} />
-        <TagSection title="개선점" tags={record.improvements} />
+        <TagSection title="강점" tags={record.strengths} variant="strength" />
+        <TagSection
+          title="개선점"
+          tags={record.improvements}
+          variant="improvement"
+        />
       </div>
 
       {/* 하단 지표 */}

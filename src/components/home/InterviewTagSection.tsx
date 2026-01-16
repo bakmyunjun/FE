@@ -1,22 +1,32 @@
-// TODO: shadcn-ui badge로 변경
+import { Badge } from '@/components/ui/badge';
+
+type TagVariant = 'strength' | 'improvement';
+
 export default function TagSection({
   title,
   tags,
+  variant,
 }: {
   title: string;
   tags: string[];
+  variant: TagVariant;
 }) {
+  const badgeStyle =
+    variant === 'strength'
+      ? 'bg-slate-100 text-green-700'
+      : 'bg-slate-100 text-red-700';
+
   return (
     <div>
       <p className="mb-2 text-xs font-medium text-muted-foreground">{title}</p>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <span
+          <Badge
             key={tag}
-            className="rounded-full bg-muted/60 px-3 py-1 text-xs text-foreground"
+            className={`rounded-full px-3 py-1 text-xs ${badgeStyle}`}
           >
             {tag}
-          </span>
+          </Badge>
         ))}
       </div>
     </div>
