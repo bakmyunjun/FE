@@ -20,7 +20,7 @@ export default function Report() {
     <div>
       <ReportHeader />
       <div className="w-full">
-        {/* 탭 헤더 */}
+        {/* 탭 */}
         <div className="flex border-b">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.key;
