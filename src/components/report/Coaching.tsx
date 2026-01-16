@@ -1,12 +1,5 @@
-import { Card, CardContent, CardHeader } from '../ui/card';
-import { Badge } from '../ui/badge';
-
-type Quality = '좋음' | '보통';
-
-const badgeVariant: Record<Quality, string> = {
-  좋음: 'bg-amber-100 text-amber-700',
-  보통: 'bg-blue-100 text-blue-700',
-};
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import QuestionItem from '@/components/report/component/QuestionItem';
 
 export default function Coaching() {
   return (
