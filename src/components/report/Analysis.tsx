@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EyeIcon, MessagesSquare, Volume2 } from 'lucide-react';
-import ProgressRow from '@/components/report/summaryComponent/ProgressRow';
-import TextPatternItem from '@/components/report/summaryComponent/TextPatternItem';
+import ProgressRow from '@/components/report/component/ProgressRow';
+import TextPatternItem from '@/components/report/component/TextPatternItem';
 
 export default function Analysis() {
   return (
