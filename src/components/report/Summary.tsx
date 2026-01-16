@@ -13,7 +13,7 @@ export default function Summary() {
       <div className="flex w-full flex-col gap-4">
         <Card>
           <CardHeader className="flex flex-row gap-2 font-semibold">
-            <CheckCircle />
+            <CheckCircle className="text-green-600" />
             강점 TOP3
           </CardHeader>
           <CardContent>
@@ -26,7 +26,7 @@ export default function Summary() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row gap-2 font-semibold">
-            <CheckCircle />
+            <CheckCircle className="text-red-700" />
             개선점 TOP3
           </CardHeader>
           <CardContent>
