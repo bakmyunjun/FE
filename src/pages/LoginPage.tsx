@@ -7,7 +7,7 @@ import kakaoLogo from '@/assets/images/kakao-mark.svg';
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-muted">
       <div className="flex flex-col items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black">
           <SquareUserIcon className="h-6 w-6 text-white" />
