@@ -5,7 +5,14 @@ import { SquareUserIcon } from 'lucide-react';
 import githubLogo from '@/assets/images/github-mark.svg';
 import kakaoLogo from '@/assets/images/kakao-mark.svg';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function LoginPage() {
+  const handleGitHubLogin = () => {
+    const redirectUri = `${window.location.origin}/auth/callback`;
+    window.location.href = `${API_BASE_URL}/auth/github?redirect_uri=${encodeURIComponent(redirectUri)}`;
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted">
       <div className="flex flex-col items-center gap-3">
@@ -21,7 +28,7 @@ export default function LoginPage() {
       <Card className="mt-4 w-full max-w-[360px]">
         <CardContent className="flex flex-col gap-4 p-6">
           <h3 className="text-center text-h3">로그인</h3>
-          <Button>
+          <Button onClick={handleGitHubLogin}>
             <img className="h-5 w-5" src={githubLogo} alt="GitHub 로고" />
             GitHub 계정으로 로그인
           </Button>
