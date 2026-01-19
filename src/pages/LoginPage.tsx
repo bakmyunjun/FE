@@ -13,6 +13,11 @@ export default function LoginPage() {
     window.location.href = `${API_BASE_URL}/auth/github?redirect_uri=${encodeURIComponent(redirectUri)}`;
   };
 
+  const handleKakaoLogin = () => {
+    const redirectUri = `${window.location.origin}/auth/callback`;
+    window.location.href = `${API_BASE_URL}/auth/kakao?redirect_uri=${encodeURIComponent(redirectUri)}`;
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted">
       <div className="flex flex-col items-center gap-3">
@@ -32,7 +37,10 @@ export default function LoginPage() {
             <img className="h-5 w-5" src={githubLogo} alt="GitHub 로고" />
             GitHub 계정으로 로그인
           </Button>
-          <Button className="bg-[#FEE500] text-black hover:bg-[#FEE500]/75">
+          <Button
+            className="bg-[#FEE500] text-black hover:bg-[#FEE500]/75"
+            onClick={handleKakaoLogin}
+          >
             <img className="h-5 w-5" src={kakaoLogo} alt="Kakao 로고" />
             Kakao 계정으로 로그인
           </Button>
