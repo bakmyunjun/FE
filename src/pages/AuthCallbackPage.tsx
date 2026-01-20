@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { exchangeOAuthToken } from '@/apis/auth';
+import { useAuthStore } from '@/stores/authStore';
 
 function getOAuthParams() {
   const params = new URLSearchParams(window.location.search);
@@ -13,6 +14,7 @@ function getOAuthParams() {
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
   const hasRequestedRef = useRef(false);
+  const login = useAuthStore((state) => state.login);
 
   useEffect(() => {
     if (hasRequestedRef.current) return;
@@ -28,7 +30,9 @@ export default function AuthCallbackPage() {
 
     const exchangeToken = async () => {
       try {
-        await exchangeOAuthToken({ code, state });
+        const { user, tokens } = await exchangeOAuthToken({ code, state });
+
+        login({ user, tokens });
         navigate('/', { replace: true });
       } catch (error) {
         console.error('[OAuth][AuthCallback] 토큰 교환 실패', error);
@@ -37,7 +41,7 @@ export default function AuthCallbackPage() {
     };
 
     exchangeToken();
-  }, [navigate]);
+  }, [navigate, login]);
 
   return (
     <div className="flex h-screen items-center justify-center">
