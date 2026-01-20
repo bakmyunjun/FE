@@ -1,3 +1,4 @@
+import axios from 'axios';
 import axiosInstance from './axios';
 import type { User, Tokens } from '@/types';
 
@@ -20,3 +21,8 @@ export async function exchangeOAuthToken(
 
   return response.data.data;
 }
+
+export const refreshToken = (refreshToken: string) =>
+  axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, {
+    refreshToken,
+  });
