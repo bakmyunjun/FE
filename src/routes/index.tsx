@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom';
 import RequireAuth from './RequireAuth';
 import RequireGuest from './RequireGuest';
-import LoginPage from '@/pages/LoginPage';
-import AuthCallbackPage from '@/pages/AuthCallbackPage';
+import LoginPage from '@/pages/auth/LoginPage';
+import AuthCallbackPage from '@/pages/auth/AuthCallbackPage';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
 import Layout from '@/routes/Layout';
