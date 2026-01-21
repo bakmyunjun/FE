@@ -34,3 +34,7 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 );
+
+export const useIsAuthenticated = (): boolean => {
+  return useAuthStore((state) => !!state.user && !!state.tokens?.accessToken);
+};
