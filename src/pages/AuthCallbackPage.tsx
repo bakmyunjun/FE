@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { exchangeOAuthToken } from '@/apis/auth';
 import { useAuthStore } from '@/stores/authStore';
+import Loader from '@/components/Loader';
 
 function getOAuthParams() {
   const params = new URLSearchParams(window.location.search);
@@ -43,9 +44,5 @@ export default function AuthCallbackPage() {
     exchangeToken();
   }, [navigate, login]);
 
-  return (
-    <div className="flex h-screen items-center justify-center">
-      로그인 처리 중...
-    </div>
-  );
+  return <Loader />;
 }
