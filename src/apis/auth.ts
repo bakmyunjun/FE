@@ -1,6 +1,6 @@
 import axios from 'axios';
 import axiosInstance from './axios';
-import type { User, Tokens } from '@/types';
+import type { User, Tokens } from '@/types/auth';
 
 interface ExchangeOAuthTokenParams {
   code: string;
