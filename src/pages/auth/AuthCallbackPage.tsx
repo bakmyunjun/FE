@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { exchangeOAuthToken } from '@/apis/auth';
-import { useAuthStore } from '@/stores/authStore';
+import { useOAuthLogin } from '@/hooks/mutations/useOAuthLogin';
+import { toast } from 'sonner';
 import Loader from '@/components/Loader';
 
 function getOAuthParams() {
@@ -15,7 +15,18 @@ function getOAuthParams() {
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
   const hasRequestedRef = useRef(false);
-  const login = useAuthStore((state) => state.login);
+  const { mutate: oauthLogin } = useOAuthLogin({
+    onSuccess: () => {
+      navigate('/', { replace: true });
+    },
+    onError: () => {
+      console.error('[OAuth][AuthCallback] 토큰 교환 실패');
+      toast.error('로그인에 실패했습니다.', {
+        position: 'top-center',
+      });
+      navigate('/login', { replace: true });
+    },
+  });
 
   useEffect(() => {
     if (hasRequestedRef.current) return;
@@ -29,20 +40,8 @@ export default function AuthCallbackPage() {
       return;
     }
 
-    const exchangeToken = async () => {
-      try {
-        const { user, tokens } = await exchangeOAuthToken({ code, state });
-
-        login({ user, tokens });
-        navigate('/', { replace: true });
-      } catch (error) {
-        console.error('[OAuth][AuthCallback] 토큰 교환 실패', error);
-        navigate('/login', { replace: true });
-      }
-    };
-
-    exchangeToken();
-  }, [navigate, login]);
+    oauthLogin({ code, state });
+  }, [navigate, oauthLogin]);
 
   return <Loader />;
 }
