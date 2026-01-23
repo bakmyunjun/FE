@@ -9,7 +9,10 @@ export function useOAuthLogin(callbacks?: MutationCallbacks) {
   return useMutation({
     mutationFn: exchangeOAuthToken,
     onSuccess: ({ user, tokens }) => {
-      login({ user, tokens });
+      localStorage.setItem('accessToken', tokens.accessToken);
+      localStorage.setItem('refreshToken', tokens.refreshToken);
+      login(user);
+
       if (callbacks?.onSuccess) callbacks.onSuccess();
     },
     onError: (error) => {

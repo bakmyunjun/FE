@@ -12,17 +12,26 @@ interface ExchangeOAuthTokenResponse {
   tokens: Tokens;
 }
 
+interface RefreshAccessTokenResponse {
+  accessToken: string;
+}
+
 export async function exchangeOAuthToken(
   params: ExchangeOAuthTokenParams,
 ): Promise<ExchangeOAuthTokenResponse> {
-  const response = await axiosInstance.post<{
+  const { data } = await axiosInstance.post<{
     data: ExchangeOAuthTokenResponse;
   }>('/auth/oauth/token', params);
 
-  return response.data.data;
+  return data.data;
 }
 
-export const refreshToken = (refreshToken: string) =>
-  axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, {
-    refreshToken,
-  });
+export async function refreshAccessToken(
+  refreshToken: string,
+): Promise<RefreshAccessTokenResponse> {
+  const { data } = await axios.post<{
+    data: RefreshAccessTokenResponse;
+  }>(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, { refreshToken });
+
+  return data.data;
+}

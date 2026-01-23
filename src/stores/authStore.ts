@@ -1,40 +1,24 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { User, Tokens } from '@/types/auth';
+import type { User } from '@/types/auth';
 
 interface AuthState {
   user: User | null;
-  tokens: Tokens | null;
-  login: (payload: { user: User; tokens: Tokens }) => void;
+  login: (user: User) => void;
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      tokens: null,
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
 
-      login: ({ user, tokens }) =>
-        set({
-          user,
-          tokens,
-        }),
+  login: (user) => set({ user }),
 
-      logout: () => {
-        set({ user: null, tokens: null });
-      },
-    }),
-    {
-      name: 'auth-storage', // localStorage key
-      partialize: (state) => ({
-        user: state.user,
-        tokens: state.tokens,
-      }),
-    },
-  ),
-);
+  logout: () => {
+    set({ user: null });
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  },
+}));
 
 export const useIsAuthenticated = (): boolean => {
-  return useAuthStore((state) => !!state.user && !!state.tokens?.accessToken);
+  return useAuthStore((state) => !!state.user);
 };
