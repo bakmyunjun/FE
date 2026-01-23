@@ -35,3 +35,11 @@ export async function refreshAccessToken(
 
   return data.data;
 }
+
+export async function getMe(): Promise<User> {
+  const { data } = await axiosInstance.get<{
+    data: User;
+  }>('/auth/me');
+
+  return data.data;
+}
