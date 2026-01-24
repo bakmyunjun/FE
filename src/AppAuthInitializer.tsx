@@ -9,13 +9,14 @@ export default function AppAuthInitializer({
   children: ReactNode;
 }) {
   const { data: me, isLoading: isMeLoading } = useMe();
-  const login = useAuthStore((state) => state.login);
+  const { login, setInitialized } = useAuthStore();
 
   useEffect(() => {
-    if (me) {
-      login(me);
+    if (!isMeLoading) {
+      if (me) login(me);
+      setInitialized();
     }
-  }, [me, login]);
+  }, [isMeLoading]);
 
   if (isMeLoading) {
     return <Loader />;

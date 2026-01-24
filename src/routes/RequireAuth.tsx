@@ -1,11 +1,16 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useIsAuthenticated } from '@/stores/authStore';
+import { useAuthStore } from '@/stores/authStore';
+import Loader from '@/components/Loader';
 
 export default function RequireAuth() {
-  const isAuthenticated = useIsAuthenticated();
+  const { user, initialized } = useAuthStore();
 
-  if (!isAuthenticated) {
-    return <Navigate to={'/login'} replace={true} />;
+  if (!initialized) {
+    return <Loader />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;

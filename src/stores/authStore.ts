@@ -3,12 +3,15 @@ import type { User } from '@/types/auth';
 
 interface AuthState {
   user: User | null;
+  initialized: boolean;
   login: (user: User) => void;
   logout: () => void;
+  setInitialized: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
+  initialized: false,
 
   login: (user) => set({ user }),
 
@@ -17,8 +20,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
   },
-}));
 
-export const useIsAuthenticated = (): boolean => {
-  return useAuthStore((state) => !!state.user);
-};
+  setInitialized: () => set({ initialized: true }),
+}));
