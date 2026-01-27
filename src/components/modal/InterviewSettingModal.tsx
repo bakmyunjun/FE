@@ -7,10 +7,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import TopicSelector from '../interview/TopicSelector';
 import { useState } from 'react';
-
-const MAIN_TOPIC_BUTTON_CLASS = 'h-10 w-28 px-4';
-const SUB_TOPIC_BUTTON_CLASS = 'h-8 w-28 px-4';
+import type { MainTopicId, SubTopicId } from '@/types/interview';
 
 type Props = {
   open: boolean;
@@ -24,6 +23,21 @@ export default function InterviewSettingModal({
   onConfirm,
 }: Props) {
   const [title, setTitle] = useState('');
+  const [mainTopicId, setMainTopicId] = useState<MainTopicId | null>(null);
+  const [subTopicIds, setSubTopicIds] = useState<SubTopicId[]>([]);
+
+  const handleSelectMainTopic = (id: MainTopicId) => {
+    setMainTopicId(id);
+    setSubTopicIds([]);
+  };
+
+  const handleToggleSubTopic = (id: SubTopicId) => {
+    setSubTopicIds((prev) =>
+      prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id],
+    );
+  };
+
+  const isConfirmEnabled = mainTopicId !== null && subTopicIds.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onCancel}>
@@ -48,44 +62,21 @@ export default function InterviewSettingModal({
 
         <div className="mb-4 flex flex-col gap-2">
           <h3 className="text-sub1 font-semibold">면접 주제</h3>
-
-          <div className="mb-2 flex gap-2">
-            <Button className={MAIN_TOPIC_BUTTON_CLASS} variant="outline">
-              백엔드
-            </Button>
-            <Button className={MAIN_TOPIC_BUTTON_CLASS} variant="outline">
-              프론트엔드
-            </Button>
-          </div>
-
-          <p className="text-caption text-muted-foreground">
-            · 서브 주제를 1개 이상 선택해주세요.
-          </p>
-
-          <div className="flex gap-2">
-            <Button className={SUB_TOPIC_BUTTON_CLASS} variant="outline">
-              subTopic 1
-            </Button>
-            <Button className={SUB_TOPIC_BUTTON_CLASS} variant="outline">
-              subTopic 2
-            </Button>
-            <Button className={SUB_TOPIC_BUTTON_CLASS} variant="outline">
-              subTopic 3
-            </Button>
-            <Button className={SUB_TOPIC_BUTTON_CLASS} variant="outline">
-              subTopic 4
-            </Button>
-            <Button className={SUB_TOPIC_BUTTON_CLASS} variant="outline">
-              subTopic 5
-            </Button>
-          </div>
+          <TopicSelector
+            mainTopicId={mainTopicId}
+            subTopicIds={subTopicIds}
+            onSelectMainTopic={handleSelectMainTopic}
+            onToggleSubTopic={handleToggleSubTopic}
+          />
         </div>
 
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={onCancel}>
             취소
           </Button>
-          <Button onClick={onConfirm}>확인</Button>
+          <Button onClick={onConfirm} disabled={!isConfirmEnabled}>
+            확인
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
