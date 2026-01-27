@@ -3,8 +3,27 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TimerIcon, PlayIcon } from 'lucide-react';
 import InterviewHeader from '@/components/interview/InterviewHeader';
+import InterviewSettingModal from '@/components/modal/InterviewSettingModal';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function InterviewPage() {
+  const navigate = useNavigate();
+
+  const [isSettingOpen, setIsSettingOpen] = useState(true);
+
+  if (isSettingOpen) {
+    return (
+      <InterviewSettingModal
+        open
+        onCancel={() => navigate('/')}
+        onConfirm={() => {
+          setIsSettingOpen(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div>
       <InterviewHeader />
