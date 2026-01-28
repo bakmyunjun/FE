@@ -1,26 +1,47 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { TimerIcon, PlayIcon } from 'lucide-react';
 import InterviewHeader from '@/components/interview/InterviewHeader';
+import InterviewSettingModal from '@/components/modal/InterviewSettingModal';
+import QuestionCard from '@/components/interview/QuestionCard';
+import Loader from '@/components/Loader';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/constants';
+import type { InterviewInfo } from '@/types/interview';
 
 export default function InterviewPage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const interviewInfo = queryClient.getQueryData<InterviewInfo>(
+    QUERY_KEYS.interview.current,
+  );
+
+  const [isSettingOpen, setIsSettingOpen] = useState(true);
+
+  if (isSettingOpen) {
+    return (
+      <InterviewSettingModal
+        open
+        onCancel={() => navigate('/')}
+        onConfirm={() => {
+          setIsSettingOpen(false);
+        }}
+      />
+    );
+  }
+
+  if (!interviewInfo) {
+    return <Loader />;
+  }
+
   return (
     <div>
       <InterviewHeader />
 
       <div className="mx-auto max-w-5xl px-10 py-6">
-        <Card className="mb-6">
-          <CardContent className="flex items-center gap-2 p-5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-sub1 font-semibold">
-              1
-            </span>
-            <span className="text-sub1 font-semibold">
-              자기소개를 해주세요.
-            </span>
-            <Badge variant="secondary">기본</Badge>
-          </CardContent>
-        </Card>
+        <QuestionCard interviewInfo={interviewInfo} />
 
         <div className="grid grid-cols-3 gap-6">
           <Card className="col-span-2 h-[320px]">
