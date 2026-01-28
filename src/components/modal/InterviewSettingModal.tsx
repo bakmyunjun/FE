@@ -7,8 +7,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import TopicSelector from '../interview/TopicSelector';
 import { useState } from 'react';
+import { useCreateInterview } from '@/hooks/mutations/useCreateInterview';
 import type { MainTopicId, SubTopicId } from '@/types/interview';
 
 type Props = {
@@ -26,6 +28,20 @@ export default function InterviewSettingModal({
   const [mainTopicId, setMainTopicId] = useState<MainTopicId | null>(null);
   const [subTopicIds, setSubTopicIds] = useState<SubTopicId[]>([]);
 
+  const { mutate: createInterview, isPending: isCreateInterviewPending } =
+    useCreateInterview({
+      onSuccess: () => {
+        onConfirm();
+      },
+      onError: () => {
+        console.error('[Interview] 면접 생성 실패');
+        toast.error('면접 생성에 문제가 발생했습니다.', {
+          position: 'top-center',
+        });
+        onCancel();
+      },
+    });
+
   const handleSelectMainTopic = (id: MainTopicId) => {
     setMainTopicId(id);
     setSubTopicIds([]);
@@ -35,6 +51,16 @@ export default function InterviewSettingModal({
     setSubTopicIds((prev) =>
       prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id],
     );
+  };
+
+  const handleConfirm = () => {
+    if (!mainTopicId) return;
+
+    createInterview({
+      title,
+      mainTopicId,
+      subTopicIds,
+    });
   };
 
   const isConfirmEnabled = mainTopicId !== null && subTopicIds.length > 0;
@@ -74,7 +100,10 @@ export default function InterviewSettingModal({
           <Button variant="outline" onClick={onCancel}>
             취소
           </Button>
-          <Button onClick={onConfirm} disabled={!isConfirmEnabled}>
+          <Button
+            onClick={handleConfirm}
+            disabled={!isConfirmEnabled || isCreateInterviewPending}
+          >
             확인
           </Button>
         </div>
