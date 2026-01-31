@@ -1,8 +1,23 @@
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
 import { DoorOpenIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useOpenAlertModal } from '@/stores/alertModalStore';
 
 export default function InterviewHeader() {
+  const navigate = useNavigate();
+  const openAlertModal = useOpenAlertModal();
+
+  const handleExit = () => {
+    openAlertModal({
+      title: '면접을 종료할까요?',
+      description: '지금 나가면 답변 내용이 저장되지 않아요.',
+      onAction: () => {
+        navigate('/');
+      },
+    });
+  };
+
   return (
     <header className="flex items-center justify-between border-b bg-muted px-8 py-4">
       <div className="flex items-center gap-2">
@@ -19,6 +34,7 @@ export default function InterviewHeader() {
         variant="ghost"
         size="icon"
         aria-label="나가기"
+        onClick={handleExit}
       >
         <DoorOpenIcon />
       </Button>
