@@ -7,7 +7,11 @@ export default function InterviewHeader() {
     <header className="flex items-center justify-between border-b bg-muted px-8 py-4">
       <div className="flex items-center gap-2">
         <span className="text-sub2">진행도</span>
-        <Progress value={10} className="w-40" />
+        <Progress
+          value={10}
+          className="w-40 border"
+          indicatorClassName="bg-emerald-500"
+        />
         <span className="text-sub2">1 / 10</span>
       </div>
       <Button
