@@ -1,13 +1,33 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TimerIcon } from 'lucide-react';
 import InterviewHeader from '@/components/interview/InterviewHeader';
+import InterviewTimer from '@/components/interview/InterviewTimer';
 import InterviewControls from '@/components/interview/InterviewControls';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { AnswerStatus } from '@/types/interview';
+
+const INITIAL_TIME = 90; // 1분 30초
 
 export default function InterviewPage() {
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
+
+  // Timer
+  useEffect(() => {
+    if (answerStatus !== 'ANSWERING') return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev === 1) {
+          setAnswerStatus('ANSWERED');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [answerStatus]);
 
   const handleAnswerStart = () => {
     if (answerStatus !== 'READY') return;
@@ -21,6 +41,7 @@ export default function InterviewPage() {
 
   const handleNextQuestion = () => {
     setAnswerStatus('READY');
+    setTimeLeft(INITIAL_TIME);
   };
 
   return (
@@ -46,10 +67,7 @@ export default function InterviewPage() {
               <div className="flex h-full items-center justify-center">
                 에이바 영역
               </div>
-              <div className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg bg-muted px-3 py-1 shadow">
-                <TimerIcon className="h-5 w-5" />
-                01 : 30
-              </div>
+              <InterviewTimer timeLeft={timeLeft} />
             </CardContent>
           </Card>
 
