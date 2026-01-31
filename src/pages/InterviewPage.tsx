@@ -1,10 +1,28 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TimerIcon, PlayIcon } from 'lucide-react';
+import { TimerIcon } from 'lucide-react';
 import InterviewHeader from '@/components/interview/InterviewHeader';
+import InterviewControls from '@/components/interview/InterviewControls';
+import { useState } from 'react';
+import type { AnswerStatus } from '@/types/interview';
 
 export default function InterviewPage() {
+  const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
+
+  const handleAnswerStart = () => {
+    if (answerStatus !== 'READY') return;
+    setAnswerStatus('ANSWERING');
+  };
+
+  const handleAnswerStop = () => {
+    if (answerStatus !== 'ANSWERING') return;
+    setAnswerStatus('ANSWERED');
+  };
+
+  const handleNextQuestion = () => {
+    setAnswerStatus('READY');
+  };
+
   return (
     <div>
       <InterviewHeader />
@@ -54,14 +72,12 @@ export default function InterviewPage() {
           </Card>
         </div>
 
-        <div className="mt-8 flex justify-center gap-4">
-          <Button size="lg">
-            <PlayIcon className="h-6 w-6" />
-            답변 시작
-          </Button>
-          <Button variant="outline">꼬리 질문</Button>
-          <Button variant="outline">다음 질문</Button>
-        </div>
+        <InterviewControls
+          answerStatus={answerStatus}
+          onAnswerStart={handleAnswerStart}
+          onAnswerStop={handleAnswerStop}
+          onNextQuestion={handleNextQuestion}
+        />
       </div>
     </div>
   );
