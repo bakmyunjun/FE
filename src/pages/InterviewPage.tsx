@@ -2,8 +2,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import InterviewHeader from '@/components/interview/InterviewHeader';
 import InterviewTimer from '@/components/interview/InterviewTimer';
+import UserAnswerCard from '@/components/interview/UserAnswerCard';
 import InterviewControls from '@/components/interview/InterviewControls';
 import { useState, useEffect } from 'react';
+import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
 import type { AnswerStatus } from '@/types/interview';
 
 const INITIAL_TIME = 90; // 1분 30초
@@ -12,14 +14,18 @@ export default function InterviewPage() {
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
+  const { answerText, startAnswer, stopAnswer, resetAnswer } =
+    useInterviewAnswer();
+
   // Timer
   useEffect(() => {
     if (answerStatus !== 'ANSWERING') return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev === 1) {
+        if (prev <= 1) {
           setAnswerStatus('ANSWERED');
+          stopAnswer();
           return 0;
         }
         return prev - 1;
@@ -32,16 +38,19 @@ export default function InterviewPage() {
   const handleAnswerStart = () => {
     if (answerStatus !== 'READY') return;
     setAnswerStatus('ANSWERING');
+    startAnswer();
   };
 
   const handleAnswerStop = () => {
     if (answerStatus !== 'ANSWERING') return;
     setAnswerStatus('ANSWERED');
+    stopAnswer();
   };
 
   const handleNextQuestion = () => {
     setAnswerStatus('READY');
     setTimeLeft(INITIAL_TIME);
+    resetAnswer();
   };
 
   return (
@@ -77,11 +86,7 @@ export default function InterviewPage() {
             </CardContent>
           </Card>
 
-          <Card className="col-span-2 h-[100px]">
-            <CardContent className="flex h-full items-center justify-center p-0">
-              내 답변 영역
-            </CardContent>
-          </Card>
+          <UserAnswerCard answerStatus={answerStatus} answerText={answerText} />
 
           <Card className="h-[100px]">
             <CardContent className="flex h-full items-center justify-center p-0">
