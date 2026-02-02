@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import InterviewHeader from '@/components/interview/InterviewHeader';
 import InterviewTimer from '@/components/interview/InterviewTimer';
 import UserAnswerCard from '@/components/interview/UserAnswerCard';
+import VoiceWaveCard from '@/components/interview/VoiceWaveCard';
 import InterviewControls from '@/components/interview/InterviewControls';
 import { useState, useEffect } from 'react';
 import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
@@ -14,7 +15,7 @@ export default function InterviewPage() {
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
-  const { answerText, startAnswer, stopAnswer, resetAnswer } =
+  const { answerText, voiceWave, startAnswer, stopAnswer, resetAnswer } =
     useInterviewAnswer();
 
   // Timer
@@ -87,12 +88,7 @@ export default function InterviewPage() {
           </Card>
 
           <UserAnswerCard answerStatus={answerStatus} answerText={answerText} />
-
-          <Card className="h-[100px]">
-            <CardContent className="flex h-full items-center justify-center p-0">
-              목소리 파동 영역
-            </CardContent>
-          </Card>
+          <VoiceWaveCard voiceWave={voiceWave} />
         </div>
 
         <InterviewControls
