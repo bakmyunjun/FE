@@ -1,5 +1,6 @@
 import { InterviewRecordItem } from '@/components/home/InterviewRecordItem';
-
+import { ScoreTrendChart } from '@/components/home/ScoreTrendChart';
+import { SkillRadarChart } from '@/components/home/SkillRadarChart';
 import { StatCard } from '@/components/home/StatCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -60,14 +61,14 @@ export default function Home() {
         <Card>
           <CardHeader className="font-semibold">점수 추이</CardHeader>
           <CardContent>
-            <div className="h-[240px] rounded-md bg-gray-100" />
+            <ScoreTrendChart />
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="font-semibold">최근 섹션 역량 분석</CardHeader>
+          <CardHeader className="font-semibold">최근 세션 역량 분석</CardHeader>
           <CardContent>
-            <div className="h-[240px] rounded-md bg-gray-100" />
+            <SkillRadarChart />
           </CardContent>
         </Card>
       </section>

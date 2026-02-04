@@ -16,6 +16,36 @@ export interface InterviewRecord {
   };
 }
 
+// 점수 추이 차트용 데이터
+export interface ScoreTrendData {
+  date: string;
+  score: number;
+}
+
+export const scoreTrendData: ScoreTrendData[] = [
+  { date: '12/18', score: 58 },
+  { date: '12/20', score: 64 },
+  { date: '12/22', score: 68 },
+  { date: '12/25', score: 72 },
+  { date: '12/28', score: 78 },
+];
+
+// 역량 분석 레이더 차트용 데이터
+export interface SkillRadarData {
+  skill: string;
+  value: number;
+  fullMark: number;
+}
+
+export const getSkillRadarData = (metrics: InterviewRecord['metrics']): SkillRadarData[] => [
+  { skill: '논리성', value: metrics.logic, fullMark: 100 },
+  { skill: '구체성', value: metrics.clarity, fullMark: 100 },
+  { skill: '시선', value: metrics.eyeContact, fullMark: 100 },
+  { skill: '목소리', value: metrics.voice, fullMark: 100 },
+  { skill: 'STAR', value: metrics.star, fullMark: 100 },
+  { skill: '시간', value: metrics.time, fullMark: 100 },
+];
+
 export const interviewRecords: InterviewRecord[] = [
   {
     id: 1,
