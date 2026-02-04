@@ -92,6 +92,27 @@ export const reportSummaryMock: ReportSummary = {
   ],
 };
 
+// 턴별 지표 차트용 DTO
+export interface TurnMetricData {
+  question: string;    // Q1, Q2, ...
+  time: number;        // 답변 시간 (초)
+  eyeOff: number;      // 시선 이탈 비율 (%)
+  silence: number;     // 침묵 비율 (%)
+}
+
+export const turnMetricsMock: TurnMetricData[] = [
+  { question: 'Q1', time: 18, eyeOff: 12, silence: 8 },
+  { question: 'Q2', time: 22, eyeOff: 8, silence: 5 },
+  { question: 'Q3', time: 25, eyeOff: 18, silence: 12 },
+  { question: 'Q4', time: 20, eyeOff: 10, silence: 6 },
+  { question: 'Q5', time: 24, eyeOff: 14, silence: 9 },
+  { question: 'Q6', time: 19, eyeOff: 9, silence: 7 },
+  { question: 'Q7', time: 26, eyeOff: 20, silence: 15 },
+  { question: 'Q8', time: 21, eyeOff: 11, silence: 8 },
+  { question: 'Q9', time: 23, eyeOff: 16, silence: 10 },
+  { question: 'Q10', time: 20, eyeOff: 13, silence: 7 },
+];
+
 export const interviewRecords: InterviewRecord[] = [
   {
     id: 1,

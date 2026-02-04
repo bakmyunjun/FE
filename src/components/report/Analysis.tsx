@@ -3,6 +3,7 @@ import { EyeIcon, MessagesSquare, Volume2 } from 'lucide-react';
 import ProgressRow from '@/components/report/component/ProgressRow';
 import TextPatternItem from '@/components/report/component/TextPatternItem';
 import { Progress } from '@/components/ui/progress';
+import { TurnMetricsChart } from './TurnMetricsChart';
 
 export default function Analysis() {
   return (
@@ -80,9 +81,9 @@ export default function Analysis() {
             </div>
           </div>
           {/* 턴별 지표 */}
-          <div className="space-y-3">
+          <div className="space-y-3 md:col-span-2">
             <div className="font-medium">턴별 지표</div>
-            <div className="h-[240px] rounded-md bg-muted" />
+            <TurnMetricsChart />
           </div>
         </CardContent>
       </Card>
