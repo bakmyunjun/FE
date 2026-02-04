@@ -46,6 +46,52 @@ export const getSkillRadarData = (metrics: InterviewRecord['metrics']): SkillRad
   { skill: '시간', value: metrics.time, fullMark: 100 },
 ];
 
+// 리포트 종합 역량 분석용 DTO
+export interface ReportSummarySkills {
+  logic: number;        // 논리성
+  specificity: number;  // 구체성
+  delivery: number;     // 전달력
+  eyeContact: number;   // 시선 처리
+  voice: number;        // 목소리
+  structure: number;    // STAR 구조
+}
+
+export interface ReportSummary {
+  skills: ReportSummarySkills;
+  strengths: string[];
+  improvements: string[];
+}
+
+export const getReportSkillRadarData = (skills: ReportSummarySkills): SkillRadarData[] => [
+  { skill: '논리성', value: skills.logic, fullMark: 100 },
+  { skill: '구체성', value: skills.specificity, fullMark: 100 },
+  { skill: '전달력', value: skills.delivery, fullMark: 100 },
+  { skill: '시선', value: skills.eyeContact, fullMark: 100 },
+  { skill: '목소리', value: skills.voice, fullMark: 100 },
+  { skill: 'STAR', value: skills.structure, fullMark: 100 },
+];
+
+export const reportSummaryMock: ReportSummary = {
+  skills: {
+    logic: 78,
+    specificity: 72,
+    delivery: 85,
+    eyeContact: 68,
+    voice: 74,
+    structure: 80,
+  },
+  strengths: [
+    '답변의 논리적 구조가 명확하고 일관성이 있습니다',
+    'STAR 기법을 활용한 구조화된 답변이 돋보입니다',
+    '핵심 메시지 전달력이 우수합니다',
+  ],
+  improvements: [
+    '구체적인 수치나 성과 데이터를 더 활용해보세요',
+    '카메라 응시를 더 자연스럽게 유지해보세요',
+    '답변 중 적절한 pause를 활용하면 더 좋습니다',
+  ],
+};
+
 export const interviewRecords: InterviewRecord[] = [
   {
     id: 1,
