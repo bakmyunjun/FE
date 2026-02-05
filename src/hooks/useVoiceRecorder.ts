@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useVoiceMetrics } from './useVoiceMetrics';
 import { estimatePitch } from '@/lib/utils/estimatePitch';
+import { toast } from 'sonner';
 import type { VoiceMetrics } from '@/types/interview';
 
 const FFT_SIZE = 2048; // 주파수 해상도
@@ -24,21 +25,28 @@ export function useVoiceRecorder() {
   const startRecording = async () => {
     if (audioContextRef.current) return;
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    micStreamRef.current = stream;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micStreamRef.current = stream;
 
-    const audioContext = new AudioContext();
-    audioContextRef.current = audioContext;
+      const audioContext = new AudioContext();
+      audioContextRef.current = audioContext;
 
-    const analyser = audioContext.createAnalyser();
-    analyserRef.current = analyser;
-    analyser.fftSize = FFT_SIZE;
+      const analyser = audioContext.createAnalyser();
+      analyserRef.current = analyser;
+      analyser.fftSize = FFT_SIZE;
 
-    // 마이크 → 분석기 연결
-    const source = audioContext.createMediaStreamSource(stream);
-    source.connect(analyser);
+      // 마이크 → 분석기 연결
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
 
-    audioLoop();
+      audioLoop();
+    } catch (err) {
+      console.error('마이크 권한 거부됨:', err);
+      toast.error('마이크 권한이 필요합니다.', {
+        description: '브라우저 설정에서 마이크를 허용해주세요.',
+      });
+    }
   };
 
   // 오디오 프레임 분석 루프

@@ -45,9 +45,6 @@ export function useSpeechToText() {
     recognition.onerror = (e) => {
       stopSTT();
       console.error('STT error:', e.error);
-      toast.error('음성 인식을 사용할 수 없습니다.', {
-        description: '마이크 권한을 확인해주세요.',
-      });
       setAnswerText(
         '음성 인식을 사용할 수 없습니다. 마이크 권한을 확인해주세요.',
       );
