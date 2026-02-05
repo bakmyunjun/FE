@@ -15,8 +15,14 @@ export default function InterviewPage() {
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
-  const { answerText, voiceWave, startAnswer, stopAnswer, resetAnswer } =
-    useInterviewAnswer();
+  const {
+    answerText,
+    voiceMetrics,
+    voiceWave,
+    startAnswer,
+    stopAnswer,
+    resetAnswer,
+  } = useInterviewAnswer();
 
   // Timer
   useEffect(() => {
@@ -49,6 +55,7 @@ export default function InterviewPage() {
   };
 
   const handleNextQuestion = () => {
+    console.log(voiceMetrics);
     setAnswerStatus('READY');
     setTimeLeft(INITIAL_TIME);
     resetAnswer();

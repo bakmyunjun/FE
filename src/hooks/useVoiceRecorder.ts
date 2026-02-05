@@ -1,11 +1,24 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
+import { useVoiceMetrics } from './useVoiceMetrics';
+import { estimatePitch } from '@/lib/utils/estimatePitch';
+import type { VoiceMetrics } from '@/types/interview';
+
+const FFT_SIZE = 2048; // 주파수 해상도
 
 export function useVoiceRecorder() {
   const micStreamRef = useRef<MediaStream | null>(null); // 마이크 스트림
   const audioContextRef = useRef<AudioContext | null>(null); // 오디오 처리 엔진
   const analyserRef = useRef<AnalyserNode | null>(null); // 소리 분석기
-  const animationRef = useRef<number | null>(null); // 애니메이션 프레임 ID (중단용)
+  const animationRef = useRef<number | null>(null); // 애니메이션 프레임 루프 ID (중단용)
 
+  const metrics = useVoiceMetrics();
+
+  const [voiceMetrics, setVoiceMetrics] = useState<VoiceMetrics>({
+    avgPitch: 0,
+    avgVolume: 0,
+    speakingRate: 0,
+    timeDistribution: { speaking: 0, pause: 0 },
+  });
   const [voiceWave, setVoiceWave] = useState<number[]>([]);
 
   const startRecording = async () => {
@@ -19,40 +32,48 @@ export function useVoiceRecorder() {
 
     const analyser = audioContext.createAnalyser();
     analyserRef.current = analyser;
-    analyser.fftSize = 256; // 파형 해상도 설정
+    analyser.fftSize = FFT_SIZE;
 
     // 마이크 → 분석기 연결
-    const micSource = audioContext.createMediaStreamSource(stream);
-    micSource.connect(analyser);
+    const source = audioContext.createMediaStreamSource(stream);
+    source.connect(analyser);
 
-    visualizeWave();
+    audioLoop();
   };
 
-  // 파형 계속 읽는 루프
-  const visualizeWave = () => {
-    if (!analyserRef.current) return;
+  // 오디오 프레임 분석 루프
+  const audioLoop = () => {
+    if (!analyserRef.current || !audioContextRef.current) return;
 
     const analyser = analyserRef.current;
-    const bufferSize = analyser.frequencyBinCount;
-    const rawData = new Uint8Array(bufferSize);
+    const buffer = new Float32Array(analyser.frequencyBinCount);
 
-    const updateWave = () => {
-      analyser.getByteTimeDomainData(rawData);
+    const loop = () => {
+      analyser.getFloatTimeDomainData(buffer);
 
-      // 0 ~ 255 → -1 ~ 1 로 정규화
-      const normalizedWave = Array.from(rawData).map(
-        (value) => (value - 128) / 128,
-      );
+      // 기본 주파수 계산 (음높이)
+      const pitch = estimatePitch(buffer, audioContextRef.current!.sampleRate);
 
-      setVoiceWave(normalizedWave);
-      animationRef.current = requestAnimationFrame(updateWave); // 다음 프레임 예약
+      // RMS Volume 계산 (음량)
+      let sumSquares = 0;
+      for (let i = 0; i < buffer.length; i++) {
+        sumSquares += buffer[i] * buffer[i];
+      }
+      const rms = Math.sqrt(sumSquares / buffer.length);
+
+      // 프레임 저장
+      metrics.pushFrame(pitch, rms);
+
+      setVoiceWave(Array.from(buffer));
+
+      animationRef.current = requestAnimationFrame(loop);
     };
 
-    updateWave();
+    loop();
   };
 
-  const stopRecording = () => {
-    // 파형 업데이트 루프 중단
+  const stopRecording = (answerText: string) => {
+    // 루프 종료
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
@@ -67,13 +88,16 @@ export function useVoiceRecorder() {
     analyserRef.current = null;
 
     setVoiceWave([]);
+
+    const finalMetrics = metrics.computeFinalMetrics(answerText);
+    metrics.resetMetrics();
+
+    return finalMetrics;
   };
 
-  useEffect(() => {
-    return () => stopRecording();
-  }, []);
-
   return {
+    voiceMetrics,
+    setVoiceMetrics,
     voiceWave,
     startRecording,
     stopRecording,

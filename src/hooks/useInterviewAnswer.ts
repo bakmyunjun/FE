@@ -11,12 +11,15 @@ export function useInterviewAnswer() {
   };
 
   const stopAnswer = () => {
-    voice.stopRecording();
     stt.stopSTT();
+    const finalMetrics = voice.stopRecording(stt.answerText);
+
+    voice.setVoiceMetrics(finalMetrics);
   };
 
   return {
     answerText: stt.answerText,
+    voiceMetrics: voice.voiceMetrics,
     voiceWave: voice.voiceWave,
     startAnswer,
     stopAnswer,
