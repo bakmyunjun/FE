@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import InterviewHeader from '@/components/interview/InterviewHeader';
 import InterviewTimer from '@/components/interview/InterviewTimer';
+import UserFaceCard from '@/components/interview/UserFaceCard';
 import UserAnswerCard from '@/components/interview/UserAnswerCard';
 import VoiceWaveCard from '@/components/interview/VoiceWaveCard';
 import InterviewControls from '@/components/interview/InterviewControls';
@@ -87,13 +88,7 @@ export default function InterviewPage() {
               <InterviewTimer timeLeft={timeLeft} />
             </CardContent>
           </Card>
-
-          <Card className="h-[320px]">
-            <CardContent className="flex h-full items-center justify-center p-0">
-              사용자 얼굴 영역
-            </CardContent>
-          </Card>
-
+          <UserFaceCard />
           <UserAnswerCard answerStatus={answerStatus} answerText={answerText} />
           <VoiceWaveCard voiceWave={voiceWave} />
         </div>
