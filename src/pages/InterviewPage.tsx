@@ -6,13 +6,19 @@ import UserFaceCard from '@/components/interview/UserFaceCard';
 import UserAnswerCard from '@/components/interview/UserAnswerCard';
 import VoiceWaveCard from '@/components/interview/VoiceWaveCard';
 import InterviewControls from '@/components/interview/InterviewControls';
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
+import { usePermissionsStore } from '@/stores/permissionsStore';
+import { useSyncPermissions } from '@/hooks/useSyncPermissions';
 import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
 import type { AnswerStatus } from '@/types/interview';
 
 const INITIAL_TIME = 90; // 1분 30초
 
 export default function InterviewPage() {
+  useSyncPermissions();
+  const { cameraPermission, micPermission } = usePermissionsStore();
+
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
@@ -43,6 +49,17 @@ export default function InterviewPage() {
     return () => clearInterval(timer);
   }, [answerStatus]);
 
+  useEffect(() => {
+    if (answerStatus !== 'ANSWERING') return;
+
+    if (!cameraPermission || !micPermission) {
+      setAnswerStatus('ANSWERED');
+      stopAnswer();
+
+      toast.warning('권한이 변경되어 답변이 종료되었습니다.');
+    }
+  }, [cameraPermission, micPermission, answerStatus]);
+
   const handleAnswerStart = () => {
     if (answerStatus !== 'READY') return;
     setAnswerStatus('ANSWERING');
@@ -61,6 +78,8 @@ export default function InterviewPage() {
     setTimeLeft(INITIAL_TIME);
     resetAnswer();
   };
+
+  const canAnswer = cameraPermission && micPermission;
 
   return (
     <div>
@@ -94,6 +113,7 @@ export default function InterviewPage() {
         </div>
 
         <InterviewControls
+          canAnswer={canAnswer}
           answerStatus={answerStatus}
           onAnswerStart={handleAnswerStart}
           onAnswerStop={handleAnswerStop}

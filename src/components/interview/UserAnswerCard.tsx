@@ -1,4 +1,5 @@
 import { Card, CardContent } from '../ui/card';
+import { usePermissionsStore } from '@/stores/permissionsStore';
 import type { AnswerStatus } from '@/types/interview';
 
 type Props = {
@@ -7,7 +8,13 @@ type Props = {
 };
 
 export default function UserAnswerCard({ answerStatus, answerText }: Props) {
+  const micPermission = usePermissionsStore((state) => state.micPermission);
+
   const getDisplayText = () => {
+    if (micPermission === false) {
+      return '음성 인식을 사용할 수 없습니다. 마이크 권한을 확인해주세요.';
+    }
+
     if (answerStatus === 'READY') {
       return '질문에 답변해주세요.';
     }

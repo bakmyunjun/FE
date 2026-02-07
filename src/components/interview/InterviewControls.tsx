@@ -3,6 +3,7 @@ import { PlayIcon, MessageSquareOff } from 'lucide-react';
 import type { AnswerStatus } from '@/types/interview';
 
 type Props = {
+  canAnswer: boolean;
   answerStatus: AnswerStatus;
   onAnswerStart: () => void;
   onAnswerStop: () => void;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export default function InterviewControls({
+  canAnswer,
   answerStatus,
   onAnswerStart,
   onAnswerStop,
@@ -18,7 +20,7 @@ export default function InterviewControls({
   return (
     <div className="mt-8 flex justify-center gap-4">
       {answerStatus === 'READY' && (
-        <Button size="lg" onClick={onAnswerStart}>
+        <Button size="lg" onClick={onAnswerStart} disabled={!canAnswer}>
           <PlayIcon className="h-6 w-6" />
           답변 시작
         </Button>
@@ -31,7 +33,7 @@ export default function InterviewControls({
           onClick={onAnswerStop}
         >
           <MessageSquareOff className="h-6 w-6" />
-          답변 종료
+          답변 완료
         </Button>
       )}
 

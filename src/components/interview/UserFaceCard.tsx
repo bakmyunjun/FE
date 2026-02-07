@@ -1,33 +1,43 @@
 import { Card, CardContent } from '../ui/card';
 import { VideoOffIcon } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { usePermissionsStore } from '@/stores/permissionsStore';
 
 export default function UserFaceCard() {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [cameraPermission, setCameraPermission] = useState<boolean | null>(
-    null,
+  const cameraPermission = usePermissionsStore(
+    (state) => state.cameraPermission,
   );
 
-  useEffect(() => {
-    async function connectCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
+  const videoRef = useRef<HTMLVideoElement | null>(null); // DOM 요소 ref
+  const streamRef = useRef<MediaStream | null>(null); // 카메라 리소스 ref
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
+  const connectCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
 
-        setCameraPermission(true);
-      } catch (err) {
-        console.error('카메라 권한 거부됨:', err);
-        setCameraPermission(false);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
       }
+    } catch (err) {
+      console.error('카메라 권한 거부됨:', err);
     }
+  };
+
+  useEffect(() => {
+    if (cameraPermission !== true) return;
 
     connectCamera();
-  }, []);
+
+    return () => {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+    };
+  }, [cameraPermission]);
 
   return (
     <Card className="h-[320px] overflow-hidden">
@@ -47,12 +57,6 @@ export default function UserFaceCard() {
             muted
             className="h-full w-full object-cover"
           />
-        )}
-
-        {cameraPermission === null && (
-          <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
-            카메라 연결 중입니다...
-          </div>
         )}
       </CardContent>
     </Card>

@@ -44,9 +44,6 @@ export function useSpeechToText() {
     recognition.onerror = (e) => {
       if (e.error === 'not-allowed') {
         stopSTT();
-        setAnswerText(
-          '음성 인식을 사용할 수 없습니다. 마이크 권한을 확인해주세요.',
-        );
       }
     };
 
