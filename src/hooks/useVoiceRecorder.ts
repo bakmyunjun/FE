@@ -14,12 +14,7 @@ export function useVoiceRecorder() {
 
   const metrics = useVoiceMetrics();
 
-  const [voiceMetrics, setVoiceMetrics] = useState<VoiceMetrics>({
-    avgPitch: 0,
-    avgVolume: 0,
-    speakingRate: 0,
-    timeDistribution: { speaking: 0, pause: 0 },
-  });
+  const [voiceMetrics, setVoiceMetrics] = useState<VoiceMetrics | null>(null);
   const [voiceWave, setVoiceWave] = useState<number[]>([]);
 
   const startRecording = async () => {

@@ -7,7 +7,7 @@ import UserAnswerCard from '@/components/interview/UserAnswerCard';
 import VoiceWaveCard from '@/components/interview/VoiceWaveCard';
 import InterviewControls from '@/components/interview/InterviewControls';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePermissionsStore } from '@/stores/permissionsStore';
 import { useSyncPermissions } from '@/hooks/useSyncPermissions';
 import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
@@ -19,17 +19,20 @@ export default function InterviewPage() {
   useSyncPermissions();
   const { cameraPermission, micPermission } = usePermissionsStore();
 
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
   const {
     answerText,
+    faceMetrics,
     voiceMetrics,
     voiceWave,
     startAnswer,
     stopAnswer,
     resetAnswer,
-  } = useInterviewAnswer();
+  } = useInterviewAnswer(videoRef);
 
   // Timer
   useEffect(() => {
@@ -73,7 +76,8 @@ export default function InterviewPage() {
   };
 
   const handleNextQuestion = () => {
-    console.log(voiceMetrics);
+    console.log('FaceMetrics', faceMetrics);
+    console.log('VoiceMetrics', voiceMetrics);
     setAnswerStatus('READY');
     setTimeLeft(INITIAL_TIME);
     resetAnswer();
@@ -107,7 +111,7 @@ export default function InterviewPage() {
               <InterviewTimer timeLeft={timeLeft} />
             </CardContent>
           </Card>
-          <UserFaceCard />
+          <UserFaceCard videoRef={videoRef} />
           <UserAnswerCard answerStatus={answerStatus} answerText={answerText} />
           <VoiceWaveCard voiceWave={voiceWave} />
         </div>

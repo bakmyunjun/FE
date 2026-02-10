@@ -3,12 +3,15 @@ import { VideoOffIcon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { usePermissionsStore } from '@/stores/permissionsStore';
 
-export default function UserFaceCard() {
+export default function UserFaceCard({
+  videoRef,
+}: {
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+}) {
   const cameraPermission = usePermissionsStore(
     (state) => state.cameraPermission,
   );
 
-  const videoRef = useRef<HTMLVideoElement | null>(null); // DOM 요소 ref
   const streamRef = useRef<MediaStream | null>(null); // 카메라 리소스 ref
 
   const connectCamera = async () => {
