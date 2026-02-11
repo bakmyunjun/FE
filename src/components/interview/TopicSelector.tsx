@@ -5,9 +5,6 @@ import {
   type SubTopicId,
 } from '@/types/interview';
 
-const MAIN_TOPIC_BUTTON_CLASS = 'h-10 w-28 px-4';
-const SUB_TOPIC_BUTTON_CLASS = 'h-8 w-28 px-4';
-
 type Props = {
   mainTopicId: MainTopicId | null;
   subTopicIds: SubTopicId[];
@@ -32,7 +29,7 @@ export default function TopicSelector({
         {INTERVIEW_TOPICS.map((topic) => (
           <Button
             key={topic.id}
-            className={MAIN_TOPIC_BUTTON_CLASS}
+            className="h-10 w-28 px-4"
             variant={mainTopicId === topic.id ? 'default' : 'outline'}
             onClick={() => onSelectMainTopic(topic.id)}
           >
@@ -53,7 +50,7 @@ export default function TopicSelector({
           {selectedMainTopic.subTopics.map((sub) => (
             <Button
               key={sub.id}
-              className={SUB_TOPIC_BUTTON_CLASS}
+              className="h-8 w-28 px-4"
               variant={subTopicIds.includes(sub.id) ? 'default' : 'outline'}
               onClick={() => onToggleSubTopic(sub.id)}
             >
