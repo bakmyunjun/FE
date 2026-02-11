@@ -1,26 +1,38 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import InterviewSettingModal from '@/components/modal/InterviewSettingModal';
 import InterviewHeader from '@/components/interview/InterviewHeader';
+import QuestionCard from '@/components/interview/QuestionCard';
 import InterviewTimer from '@/components/interview/InterviewTimer';
 import UserFaceCard from '@/components/interview/UserFaceCard';
 import UserAnswerCard from '@/components/interview/UserAnswerCard';
 import VoiceWaveCard from '@/components/interview/VoiceWaveCard';
 import InterviewControls from '@/components/interview/InterviewControls';
+import Loader from '@/components/Loader';
 import { toast } from 'sonner';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePermissionsStore } from '@/stores/permissionsStore';
 import { useSyncPermissions } from '@/hooks/useSyncPermissions';
 import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
-import type { AnswerStatus } from '@/types/interview';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/constants';
+import type { InterviewInfo, AnswerStatus } from '@/types/interview';
 
 const INITIAL_TIME = 90; // 1분 30초
 
 export default function InterviewPage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const interviewInfo = queryClient.getQueryData<InterviewInfo>(
+    QUERY_KEYS.interview.current,
+  );
+
   useSyncPermissions();
   const { cameraPermission, micPermission } = usePermissionsStore();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  const [isSettingOpen, setIsSettingOpen] = useState(true);
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
@@ -63,6 +75,8 @@ export default function InterviewPage() {
     }
   }, [cameraPermission, micPermission, answerStatus]);
 
+  const canAnswer = cameraPermission && micPermission;
+
   const handleAnswerStart = () => {
     if (answerStatus !== 'READY') return;
     setAnswerStatus('ANSWERING');
@@ -83,24 +97,28 @@ export default function InterviewPage() {
     resetAnswer();
   };
 
-  const canAnswer = cameraPermission && micPermission;
+  if (isSettingOpen) {
+    return (
+      <InterviewSettingModal
+        open
+        onCancel={() => navigate('/')}
+        onConfirm={() => {
+          setIsSettingOpen(false);
+        }}
+      />
+    );
+  }
+
+  if (!interviewInfo) {
+    return <Loader />;
+  }
 
   return (
     <div>
       <InterviewHeader />
 
       <div className="mx-auto max-w-5xl px-10 py-6">
-        <Card className="mb-6">
-          <CardContent className="flex items-center gap-2 p-5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-sub1 font-semibold">
-              1
-            </span>
-            <span className="text-sub1 font-semibold">
-              자기소개를 해주세요.
-            </span>
-            <Badge variant="secondary">기본</Badge>
-          </CardContent>
-        </Card>
+        <QuestionCard interviewInfo={interviewInfo} />
 
         <div className="grid grid-cols-3 gap-6">
           <Card className="col-span-2 h-[320px]">
