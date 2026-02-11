@@ -82,7 +82,7 @@ export default function InterviewSettingModal({
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="면접 레포트 제목을 입력하세요"
+            placeholder="면접 레포트 제목을 입력하세요 (미입력 시 자동 생성)"
           />
         </div>
 
