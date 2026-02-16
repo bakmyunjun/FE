@@ -14,10 +14,12 @@ import { useNavigate } from 'react-router-dom';
 import { usePermissionsStore } from '@/stores/permissionsStore';
 import { useSyncPermissions } from '@/hooks/useSyncPermissions';
 import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
+import { useSubmitTurn } from '@/hooks/mutations/useNextTurn';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/constants';
 import type { InterviewInfo, AnswerStatus } from '@/types/interview';
 
+const MAX_TURN = 10;
 const INITIAL_TIME = 90; // 1분 30초
 
 export default function InterviewPage() {
@@ -32,7 +34,7 @@ export default function InterviewPage() {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const [isSettingOpen, setIsSettingOpen] = useState(true);
+  const [isSettingModalOpen, setIsSettingModalOpen] = useState(true);
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
@@ -45,6 +47,28 @@ export default function InterviewPage() {
     stopAnswer,
     resetAnswer,
   } = useInterviewAnswer(videoRef);
+
+  const { mutate: submitTurn, isPending: isSubmitTurnPending } = useSubmitTurn({
+    onSuccess: () => {
+      if (isLastTurn) {
+        toast.success('수고하셨습니다!', {
+          description: '면접 결과를 확인해보세요.',
+        });
+        navigate(`/report/${interviewInfo?.interviewId}`);
+        return;
+      }
+
+      setAnswerStatus('READY');
+      setTimeLeft(INITIAL_TIME);
+      resetAnswer();
+    },
+    onError: () => {
+      console.error('[Interview] 답변 제출 실패');
+      toast.error('답변 제출에 문제가 발생했습니다.', {
+        position: 'top-center',
+      });
+    },
+  });
 
   // Timer
   useEffect(() => {
@@ -75,7 +99,7 @@ export default function InterviewPage() {
     }
   }, [cameraPermission, micPermission, answerStatus]);
 
-  const canAnswer = cameraPermission && micPermission;
+  const canAnswer = cameraPermission && micPermission && !isSubmitTurnPending;
 
   const handleAnswerStart = () => {
     if (answerStatus !== 'READY') return;
@@ -89,21 +113,31 @@ export default function InterviewPage() {
     stopAnswer();
   };
 
-  const handleNextQuestion = () => {
-    console.log('FaceMetrics', faceMetrics);
-    console.log('VoiceMetrics', voiceMetrics);
-    setAnswerStatus('READY');
-    setTimeLeft(INITIAL_TIME);
-    resetAnswer();
+  const handleNextTurn = (isFollowup: boolean) => {
+    if (!interviewInfo) return;
+    if (!faceMetrics || !voiceMetrics) {
+      toast.error('분석 데이터가 아직 준비되지 않았습니다.');
+      return;
+    }
+
+    submitTurn({
+      interviewId: interviewInfo.interviewId,
+      answerText,
+      turnIndex: interviewInfo.turnIndex,
+      answerDuration: INITIAL_TIME - timeLeft,
+      faceMetrics,
+      voiceMetrics,
+      isFollowupQuestion: isFollowup,
+    });
   };
 
-  if (isSettingOpen) {
+  if (isSettingModalOpen) {
     return (
       <InterviewSettingModal
         open
         onCancel={() => navigate('/')}
         onConfirm={() => {
-          setIsSettingOpen(false);
+          setIsSettingModalOpen(false);
         }}
       />
     );
@@ -113,9 +147,14 @@ export default function InterviewPage() {
     return <Loader />;
   }
 
+  const isLastTurn = interviewInfo.turnIndex >= MAX_TURN;
+
   return (
     <div>
-      <InterviewHeader />
+      <InterviewHeader
+        currentTurn={interviewInfo.turnIndex}
+        maxTurn={MAX_TURN}
+      />
 
       <div className="mx-auto max-w-5xl px-10 py-6">
         <QuestionCard interviewInfo={interviewInfo} />
@@ -135,11 +174,14 @@ export default function InterviewPage() {
         </div>
 
         <InterviewControls
-          canAnswer={canAnswer}
           answerStatus={answerStatus}
+          canAnswer={canAnswer}
+          isSubmitting={isSubmitTurnPending}
+          isLastTurn={isLastTurn}
+          remainingFollowupCount={interviewInfo.remainingFollowupCount}
           onAnswerStart={handleAnswerStart}
           onAnswerStop={handleAnswerStop}
-          onNextQuestion={handleNextQuestion}
+          onNextTurn={handleNextTurn}
         />
       </div>
     </div>

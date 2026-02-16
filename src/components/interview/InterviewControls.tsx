@@ -1,21 +1,27 @@
 import { Button } from '../ui/button';
-import { PlayIcon, MessageSquareOff } from 'lucide-react';
+import { PlayIcon, MessageSquareOff, PowerIcon } from 'lucide-react';
 import type { AnswerStatus } from '@/types/interview';
 
 type Props = {
-  canAnswer: boolean;
   answerStatus: AnswerStatus;
+  canAnswer: boolean;
+  isSubmitting: boolean;
+  isLastTurn: boolean;
+  remainingFollowupCount: number;
   onAnswerStart: () => void;
   onAnswerStop: () => void;
-  onNextQuestion: () => void;
+  onNextTurn: (isFollowup: boolean) => void;
 };
 
 export default function InterviewControls({
-  canAnswer,
   answerStatus,
+  canAnswer,
+  isSubmitting,
+  isLastTurn,
+  remainingFollowupCount,
   onAnswerStart,
   onAnswerStop,
-  onNextQuestion,
+  onNextTurn,
 }: Props) {
   return (
     <div className="mt-8 flex justify-center gap-4">
@@ -37,21 +43,39 @@ export default function InterviewControls({
         </Button>
       )}
 
-      <Button
-        variant="outline"
-        disabled={answerStatus !== 'ANSWERED'}
-        onClick={onNextQuestion}
-      >
-        꼬리 질문
-      </Button>
+      {!isLastTurn && (
+        <>
+          {remainingFollowupCount > 0 && (
+            <Button
+              variant="outline"
+              onClick={() => onNextTurn(true)}
+              disabled={answerStatus !== 'ANSWERED' || isSubmitting}
+            >
+              꼬리 질문
+            </Button>
+          )}
 
-      <Button
-        variant="outline"
-        disabled={answerStatus !== 'ANSWERED'}
-        onClick={onNextQuestion}
-      >
-        다음 질문
-      </Button>
+          <Button
+            variant="outline"
+            onClick={() => onNextTurn(false)}
+            disabled={answerStatus !== 'ANSWERED' || isSubmitting}
+          >
+            다음 질문
+          </Button>
+        </>
+      )}
+
+      {isLastTurn && (
+        <Button
+          size="lg"
+          variant="destructive"
+          onClick={() => onNextTurn(false)}
+          disabled={answerStatus !== 'ANSWERED' || isSubmitting}
+        >
+          <PowerIcon className="h-6 w-6" />
+          면접 종료
+        </Button>
+      )}
     </div>
   );
 }

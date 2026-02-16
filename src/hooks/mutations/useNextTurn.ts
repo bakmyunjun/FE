@@ -1,24 +1,30 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createInterview } from '@/apis/interview';
+import { submitTurn } from '@/apis/interview';
 import { QUERY_KEYS } from '@/lib/constants';
 import type { InterviewInfo } from '@/types/interview';
 import type { MutationCallbacks } from '@/types/common';
 
-export function useCreateInterview(callbacks?: MutationCallbacks) {
+export function useSubmitTurn(callbacks?: MutationCallbacks) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createInterview,
+    mutationFn: submitTurn,
     onSuccess: (data) => {
+      // 면접 결과 분석중 (마지막 턴 제출 완료)
+      if (data.status === 'ANALYZING') {
+        if (callbacks?.onSuccess) callbacks.onSuccess();
+        return;
+      }
+
       const interviewInfo: InterviewInfo = {
         interviewId: data.interviewId,
-        turnIndex: data.turnIndex,
+        turnIndex: data.nextTurnIndex,
         question: {
-          questionId: data.firstQuestion.questionId,
-          text: data.firstQuestion.text,
+          questionId: data.nextQuestion.questionId,
+          text: data.nextQuestion.text,
         },
-        questionType: '기본',
-        remainingFollowupCount: 2,
+        questionType: data.nextQuestion.type === 'followup' ? '꼬리' : '기본',
+        remainingFollowupCount: data.remainingFollowupCount,
       };
 
       queryClient.setQueryData(QUERY_KEYS.interview.current, interviewInfo);

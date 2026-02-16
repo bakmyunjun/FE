@@ -56,13 +56,13 @@ export const INTERVIEW_TOPICS: MainTopic[] = [
  */
 export interface InterviewInfo {
   interviewId: string;
-  title: string;
   turnIndex: number;
   question: {
     questionId: string;
     text: string;
   };
   questionType: '기본' | '꼬리';
+  remainingFollowupCount: number;
 }
 
 /**

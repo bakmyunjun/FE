@@ -4,9 +4,16 @@ import { DoorOpenIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOpenAlertModal } from '@/stores/alertModalStore';
 
-export default function InterviewHeader() {
+type Props = {
+  currentTurn: number;
+  maxTurn: number;
+};
+
+export default function InterviewHeader({ currentTurn, maxTurn }: Props) {
   const navigate = useNavigate();
   const openAlertModal = useOpenAlertModal();
+
+  const progressValue = (currentTurn / maxTurn) * 100;
 
   const handleExit = () => {
     openAlertModal({
@@ -23,11 +30,13 @@ export default function InterviewHeader() {
       <div className="flex items-center gap-2">
         <span className="text-sub2">진행도</span>
         <Progress
-          value={10}
+          value={progressValue}
           className="w-40 border"
           indicatorClassName="bg-emerald-500"
         />
-        <span className="text-sub2">1 / 10</span>
+        <span className="text-sub2">
+          {currentTurn} / {maxTurn}
+        </span>
       </div>
       <Button
         className="hover:text-destructive [&_svg]:!size-8"
