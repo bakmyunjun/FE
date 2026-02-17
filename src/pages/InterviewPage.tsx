@@ -1,8 +1,7 @@
-import { Card, CardContent } from '@/components/ui/card';
 import InterviewSettingModal from '@/components/modal/InterviewSettingModal';
 import InterviewHeader from '@/components/interview/InterviewHeader';
 import QuestionCard from '@/components/interview/QuestionCard';
-import InterviewTimer from '@/components/interview/InterviewTimer';
+import InterviewerAvaCard from '@/components/interview/InterviewerAvaCard';
 import UserFaceCard from '@/components/interview/UserFaceCard';
 import UserAnswerCard from '@/components/interview/UserAnswerCard';
 import VoiceWaveCard from '@/components/interview/VoiceWaveCard';
@@ -88,6 +87,7 @@ export default function InterviewPage() {
     return () => clearInterval(timer);
   }, [answerStatus]);
 
+  // Permission
   useEffect(() => {
     if (answerStatus !== 'ANSWERING') return;
 
@@ -155,19 +155,11 @@ export default function InterviewPage() {
         currentTurn={interviewInfo.turnIndex}
         maxTurn={MAX_TURN}
       />
-
       <div className="mx-auto max-w-5xl px-10 py-6">
         <QuestionCard interviewInfo={interviewInfo} />
 
         <div className="grid grid-cols-3 gap-6">
-          <Card className="col-span-2 h-[320px]">
-            <CardContent className="relative h-full p-0">
-              <div className="flex h-full items-center justify-center">
-                에이바 영역
-              </div>
-              <InterviewTimer timeLeft={timeLeft} />
-            </CardContent>
-          </Card>
+          <InterviewerAvaCard timeLeft={timeLeft} />
           <UserFaceCard videoRef={videoRef} />
           <UserAnswerCard answerStatus={answerStatus} answerText={answerText} />
           <VoiceWaveCard voiceWave={voiceWave} />
