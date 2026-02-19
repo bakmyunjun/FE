@@ -19,6 +19,8 @@ export default function VoiceWaveCard({ voiceWave }: { voiceWave: number[] }) {
     ctx.beginPath();
 
     // 파형 배열 → 화면 좌표 변환
+    if (voiceWave.length < 2) return;
+
     voiceWave.forEach((value, index) => {
       const x = (index / (voiceWave.length - 1)) * width;
       const y = height / 2 + value * (height / 2);
