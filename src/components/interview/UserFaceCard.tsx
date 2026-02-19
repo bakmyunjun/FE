@@ -14,21 +14,25 @@ export default function UserFaceCard({
 
   const streamRef = useRef<MediaStream | null>(null); // 카메라 리소스 ref
 
-  const connectCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (err) {
-      console.error('카메라 권한 거부됨:', err);
-    }
-  };
-
   useEffect(() => {
     if (cameraPermission !== true) return;
+
+    const video = videoRef.current;
+
+    const connectCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        streamRef.current = stream;
+
+        if (video) {
+          video.srcObject = stream;
+        }
+      } catch (err) {
+        console.error('카메라 권한 거부됨:', err);
+      }
+    };
 
     connectCamera();
 
@@ -36,11 +40,11 @@ export default function UserFaceCard({
       streamRef.current?.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
+      if (video) {
+        video.srcObject = null;
       }
     };
-  }, [cameraPermission]);
+  }, [cameraPermission, videoRef]);
 
   return (
     <Card className="h-[320px] overflow-hidden">
