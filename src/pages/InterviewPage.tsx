@@ -75,18 +75,19 @@ export default function InterviewPage() {
     if (answerStatus !== 'ANSWERING') return;
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          setAnswerStatus('ANSWERED');
-          stopAnswer();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
 
     return () => clearInterval(timer);
   }, [answerStatus]);
+
+  // Timer 만료
+  useEffect(() => {
+    if (answerStatus === 'ANSWERING' && timeLeft <= 0) {
+      setAnswerStatus('ANSWERED');
+      stopAnswer();
+    }
+  }, [timeLeft, answerStatus]);
 
   // Permission
   useEffect(() => {
