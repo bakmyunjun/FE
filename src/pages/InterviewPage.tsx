@@ -27,6 +27,7 @@ export default function InterviewPage() {
   const interviewInfo = queryClient.getQueryData<InterviewInfo>(
     QUERY_KEYS.interview.current,
   );
+  const isLastTurn = (interviewInfo?.turnIndex ?? 0) >= MAX_TURN;
 
   useSyncPermissions();
   const { cameraPermission, micPermission } = usePermissionsStore();
@@ -146,8 +147,6 @@ export default function InterviewPage() {
   if (!interviewInfo) {
     return <Loader />;
   }
-
-  const isLastTurn = interviewInfo.turnIndex >= MAX_TURN;
 
   return (
     <div>
