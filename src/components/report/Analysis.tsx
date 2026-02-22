@@ -1,11 +1,16 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { EyeIcon, MessagesSquare, Volume2 } from 'lucide-react';
-import ProgressRow from '@/components/report/component/ProgressRow';
+import { MessagesSquare, BarChart3 } from 'lucide-react';
 import TextPatternItem from '@/components/report/component/TextPatternItem';
-import { Progress } from '@/components/ui/progress';
 import { TurnMetricsChart } from './TurnMetricsChart';
+import type { ReportViewAnalysis } from '@/types/interview';
 
-export default function Analysis() {
+interface Props {
+  analysis: ReportViewAnalysis;
+}
+
+export default function Analysis({ analysis }: Props) {
+  const { textPatternIssues, perTurnScores } = analysis;
+
   return (
     <div className="flex flex-col gap-6">
       {/* 텍스트 패턴 분석 */}
@@ -15,76 +20,37 @@ export default function Analysis() {
           텍스트 패턴 분석
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <TextPatternItem
-            title="STAR 기법 누락"
-            description="일부 답변에서 결과(Result) 부분이 명확하지 않음"
-            example="질문 3, 7번에서 행동 후 결과 미언급"
-          />
-          <TextPatternItem
-            title="근거 부족"
-            description="주장에 대한 구체적인 데이터나 사례가 부족"
-            example="“많은 경험” → 구체 횟수나 기간 필요"
-          />
-          <TextPatternItem
-            title="중복 표현"
-            description="특정 어휘가 반복적으로 사용됨"
-            example="“그래서”, “것 같습니다” 과다 사용 (평균 5회/답변)"
-          />
+          {textPatternIssues.length > 0 ? (
+            textPatternIssues.map((issue, index) => (
+              <TextPatternItem
+                key={index}
+                title={issue.type}
+                description={issue.description}
+                example={`관련 질문: ${issue.affectedTurnIndexes.map((i) => `Q${i}`).join(', ')}`}
+              />
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              특이 패턴이 발견되지 않았습니다.
+            </p>
+          )}
         </CardContent>
       </Card>
 
-      {/* 비언어 / 음성 경향 요약 */}
+      {/* 턴별 점수 */}
       <Card>
         <CardHeader className="flex flex-row items-center gap-2 font-semibold">
-          <EyeIcon className="h-5 w-5" />
-          비언어 / 음성 경향 요약
+          <BarChart3 className="h-5 w-5" />
+          턴별 점수
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {/* 비언어 */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 font-medium">
-              <EyeIcon className="h-4 w-4" />
-              시선 이동률
-            </div>
-            <Progress
-              value={68}
-              className="w-full bg-muted"
-              indicatorClassName="bg-emerald-500"
-            />
-
-            <p className="text-xs text-muted-foreground">
-              이동이 잦은 구간: 질문 3, 7, 9
+        <CardContent>
+          {perTurnScores.length > 0 ? (
+            <TurnMetricsChart perTurnScores={perTurnScores} />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              턴별 점수 데이터가 없습니다.
             </p>
-
-            <ProgressRow label="깜빡임 패턴" value="분당 18회 (정상)" />
-            <ProgressRow label="고개 움직임" value="적절, 긴장도 보통" />
-          </div>
-
-          {/* 음성 */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 font-medium">
-              <Volume2 className="h-4 w-4" />
-              음성 분석
-            </div>
-
-            <ProgressRow label="피치 중앙값" value="215 Hz" />
-            <ProgressRow label="피치 범위" value="68 Hz" />
-            <ProgressRow label="피치 변동성" value="28.0%" />
-
-            <div>
-              <ProgressRow label="침묵 비율" value="15%" />
-              <Progress
-                value={25}
-                className="w-full bg-muted"
-                indicatorClassName="bg-blue-500"
-              />
-            </div>
-          </div>
-          {/* 턴별 지표 */}
-          <div className="space-y-3 md:col-span-2">
-            <div className="font-medium">턴별 지표</div>
-            <TurnMetricsChart />
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

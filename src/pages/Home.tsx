@@ -5,7 +5,7 @@ import { StatCard } from '@/components/home/StatCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { interviewRecords } from '@/lib/mock';
+import { useInterviewReports } from '@/hooks/queries/useInterviewReports';
 
 import {
   TrendingUp,
@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+  const { data, isLoading } = useInterviewReports({ page: 1, size: 10 });
+
   return (
     <div className="flex flex-col gap-3">
       {/* 프로필 요약 */}
@@ -97,9 +99,17 @@ export default function Home() {
         </CardHeader>
         {/* 면접 기록*/}
         <section className="flex flex-col gap-4 p-6">
-          {interviewRecords.map((record) => (
-            <InterviewRecordItem key={record.id} record={record} />
-          ))}
+          {isLoading ? (
+            <p className="text-center text-muted-foreground">로딩 중...</p>
+          ) : data?.items.length ? (
+            data.items.map((record) => (
+              <InterviewRecordItem key={record.interviewId} record={record} />
+            ))
+          ) : (
+            <p className="text-center text-muted-foreground">
+              면접 기록이 없습니다.
+            </p>
+          )}
         </section>
       </Card>
     </div>

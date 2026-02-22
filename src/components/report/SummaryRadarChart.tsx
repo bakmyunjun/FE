@@ -6,14 +6,18 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from 'recharts';
-import { getReportSkillRadarData, type ReportSummarySkills } from '@/lib/mock';
+import type { Competency } from '@/types/interview';
 
-interface SummaryRadarChartProps {
-  skills: ReportSummarySkills;
+interface Props {
+  competencies: Competency[];
 }
 
-export function SummaryRadarChart({ skills }: SummaryRadarChartProps) {
-  const data = getReportSkillRadarData(skills);
+export function SummaryRadarChart({ competencies }: Props) {
+  const data = competencies.map((c) => ({
+    skill: c.label,
+    value: c.score,
+    fullMark: 100,
+  }));
 
   return (
     <ResponsiveContainer width="100%" height={240}>

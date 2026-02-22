@@ -1,40 +1,70 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import QuestionItem from '@/components/report/component/QuestionItem';
+import { Lightbulb, Target } from 'lucide-react';
+import type { ReportViewCoaching } from '@/types/interview';
 
-export default function Coaching() {
+interface Props {
+  coaching: ReportViewCoaching;
+}
+
+export default function Coaching({ coaching }: Props) {
+  const { actionItems, turnSuggestions } = coaching;
+
   return (
     <div className="flex flex-col gap-4">
+      {/* 액션 아이템 */}
       <Card>
-        <CardHeader className="font-semibold">꼬리 질문 품질 분석</CardHeader>
+        <CardHeader className="flex flex-row items-center gap-2 font-semibold">
+          <Target className="h-5 w-5" />
+          액션 아이템
+        </CardHeader>
+        <CardContent>
+          {actionItems.length > 0 ? (
+            <ul className="space-y-2">
+              {actionItems.map((item, index) => (
+                <li
+                  key={index}
+                  className="flex items-start gap-2 text-sm text-muted-foreground"
+                >
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                    {index + 1}
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              액션 아이템이 없습니다.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
-        <CardContent className="flex flex-col gap-3">
-          <QuestionItem
-            question="그 경험에서 가장 어려웠던 점은 무엇이었나요?"
-            description="구체적인 어려움과 해결 과정을 도출하여 문제 해결 능력 평가"
-          />
-
-          <QuestionItem
-            question="그때 다르게 행동했다면 어떻게 했을까요?"
-            description="성찰 능력과 개선 의지를 파악하는 효과적인 질문"
-          />
-
-          <QuestionItem
-            question="약점을 극복하기 위해 어떤 노력을 하고 있나요?"
-            description="자기 개발 의지를 확인할 수 있으나, 더 구체적인 계획 유도 가능"
-            quality="GOOD"
-          />
-
-          <QuestionItem
-            question="그 목표를 달성하기 위한 구체적인 계획이 있나요?"
-            description="목표 지향성을 평가하나, 실행 가능성 검증 질문 추가 필요"
-            quality="NORMAL"
-          />
-
-          <QuestionItem
-            question="입사 후 가장 먼저 하고 싶은 일은 무엇인가요?"
-            description="열정을 확인할 수 있으나, 회사에 대한 이해도를 더 깊게 평가하는 질문 권장"
-            quality="GOOD"
-          />
+      {/* 턴별 개선 제안 */}
+      <Card>
+        <CardHeader className="flex flex-row items-center gap-2 font-semibold">
+          <Lightbulb className="h-5 w-5" />
+          질문별 개선 제안
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          {turnSuggestions.length > 0 ? (
+            turnSuggestions.map((suggestion) => (
+              <div
+                key={suggestion.turnIndex}
+                className="rounded-lg border p-4"
+              >
+                <p className="font-medium">Q{suggestion.turnIndex}. {suggestion.question}</p>
+                <div className="mt-2 space-y-1 text-sm">
+                  <p className="text-red-600">약점: {suggestion.weakness}</p>
+                  <p className="text-green-600">제안: {suggestion.suggestion}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              개선 제안이 없습니다.
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

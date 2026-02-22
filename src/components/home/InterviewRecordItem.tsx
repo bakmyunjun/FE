@@ -1,62 +1,69 @@
-import type { InterviewRecord } from '@/lib/mock';
+import type { InterviewReportItem } from '@/types/interview';
 import { ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import Metric from '@/components/home/InterviewMetric';
-import TagSection from '@/components/home/InterviewTagSection';
+import { Link } from 'react-router-dom';
 
 interface Props {
-  record: InterviewRecord;
+  record: InterviewReportItem;
+}
+
+// 날짜 포맷팅 (ISO -> yyyy-MM-dd)
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}
+
+// 상태 뱃지 스타일
+function getStatusBadge(status: InterviewReportItem['reportStatus']) {
+  const styles = {
+    done: 'bg-green-100 text-green-700',
+    processing: 'bg-yellow-100 text-yellow-700',
+    pending: 'bg-gray-100 text-gray-700',
+  };
+  const labels = {
+    done: '완료',
+    processing: '분석중',
+    pending: '대기중',
+  };
+  return { style: styles[status], label: labels[status] };
 }
 
 export function InterviewRecordItem({ record }: Props) {
+  const statusBadge = getStatusBadge(record.reportStatus);
+
   return (
-    <Card className="p-6">
-      {/* 상단 */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          {/* 점수 */}
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-lg font-bold text-amber-600">
-            {record.score}
+    <Link to={`/report/${record.interviewId}`}>
+      <Card className="p-6 transition-colors hover:bg-muted/50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* 점수 */}
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-lg font-bold text-amber-600">
+              {Math.round(record.totalScore)}
+            </div>
+
+            {/* 타이틀 & 메타 */}
+            <div>
+              <p className="font-semibold">
+                {record.title}
+                <span
+                  className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge.style}`}
+                >
+                  {statusBadge.label}
+                </span>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {formatDate(record.createdAt)}
+              </p>
+            </div>
           </div>
 
-          {/* 타이틀*/}
-          <div>
-            <p className="font-semibold">
-              {record.date}
-              <span className="ml-2 text-sm font-medium text-muted-foreground">
-                · {record.duration}
-              </span>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {record.questionProgress}
-            </p>
-          </div>
+          <ChevronRight className="h-5 w-5 text-muted-foreground" />
         </div>
-
-        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-      </div>
-
-      {/* 강점, 개선점 */}
-      <div className="mt-5 grid grid-cols-2 gap-8">
-        <TagSection title="강점" tags={record.strengths} variant="strength" />
-        <TagSection
-          title="개선점"
-          tags={record.improvements}
-          variant="improvement"
-        />
-      </div>
-
-      {/* 하단 지표 */}
-      <div className="mt-6 border-t pt-4">
-        <div className="grid grid-cols-6 gap-4 text-center">
-          <Metric label="논리" value={record.metrics.logic} />
-          <Metric label="구체성" value={record.metrics.clarity} />
-          <Metric label="시선" value={record.metrics.eyeContact} />
-          <Metric label="목소리" value={record.metrics.voice} />
-          <Metric label="STAR" value={record.metrics.star} />
-          <Metric label="시간" value={record.metrics.time} />
-        </div>
-      </div>
-    </Card>
+      </Card>
+    </Link>
   );
 }
