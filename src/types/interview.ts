@@ -1,3 +1,6 @@
+/**
+ * 인터뷰 주제
+ */
 export type MainTopicId = 'frontend' | 'backend';
 
 export type SubTopicId =
@@ -48,13 +51,43 @@ export const INTERVIEW_TOPICS: MainTopic[] = [
   },
 ];
 
+/**
+ * 인터뷰 정보
+ */
 export interface InterviewInfo {
   interviewId: string;
-  title: string;
   turnIndex: number;
   question: {
     questionId: string;
     text: string;
   };
   questionType: '기본' | '꼬리';
+  remainingFollowupCount: number;
 }
+
+/**
+ * 답변 상태
+ */
+export type AnswerStatus = 'READY' | 'ANSWERING' | 'ANSWERED';
+
+/**
+ * 메트릭스 ( 얼굴 / 음성 )
+ */
+export type FaceMetrics = {
+  detectedFrames: number;
+  expressionDistribution: {
+    neutral: number;
+    smile: number;
+    frown: number;
+  };
+};
+
+export type VoiceMetrics = {
+  avgPitch: number;
+  avgVolume: number;
+  speakingRate: number;
+  timeDistribution: {
+    speaking: number;
+    pause: number;
+  };
+};
