@@ -1,67 +1,180 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { TimerIcon, PlayIcon } from 'lucide-react';
+import InterviewSettingModal from '@/components/modal/InterviewSettingModal';
 import InterviewHeader from '@/components/interview/InterviewHeader';
+import QuestionCard from '@/components/interview/QuestionCard';
+import InterviewerAvaCard from '@/components/interview/InterviewerAvaCard';
+import UserFaceCard from '@/components/interview/UserFaceCard';
+import UserAnswerCard from '@/components/interview/UserAnswerCard';
+import VoiceWaveCard from '@/components/interview/VoiceWaveCard';
+import InterviewControls from '@/components/interview/InterviewControls';
+import Loader from '@/components/Loader';
+import { toast } from 'sonner';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { usePermissionsStore } from '@/stores/permissionsStore';
+import { useSyncPermissions } from '@/hooks/useSyncPermissions';
+import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
+import { useSubmitTurn } from '@/hooks/mutations/useNextTurn';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/constants';
+import type { InterviewInfo, AnswerStatus } from '@/types/interview';
+
+const MAX_TURN = 10;
+const INITIAL_TIME = 90; // 1분 30초
 
 export default function InterviewPage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const interviewInfo = queryClient.getQueryData<InterviewInfo>(
+    QUERY_KEYS.interview.current,
+  );
+  const isLastTurn = (interviewInfo?.turnIndex ?? 0) >= MAX_TURN;
+
+  useSyncPermissions();
+  const { cameraPermission, micPermission } = usePermissionsStore();
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const [isSettingModalOpen, setIsSettingModalOpen] = useState(true);
+  const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
+
+  const {
+    answerText,
+    faceMetrics,
+    voiceMetrics,
+    voiceWave,
+    startAnswer,
+    stopAnswer,
+    resetAnswer,
+  } = useInterviewAnswer(videoRef);
+
+  const { mutate: submitTurn, isPending: isSubmitTurnPending } = useSubmitTurn({
+    onSuccess: () => {
+      if (isLastTurn) {
+        toast.success('수고하셨습니다!', {
+          description: '면접 결과를 확인해보세요.',
+        });
+        navigate(`/report/${interviewInfo?.interviewId}`);
+        return;
+      }
+
+      setAnswerStatus('READY');
+      setTimeLeft(INITIAL_TIME);
+      resetAnswer();
+    },
+    onError: () => {
+      console.error('[Interview] 답변 제출 실패');
+      toast.error('답변 제출에 문제가 발생했습니다.', {
+        position: 'top-center',
+      });
+    },
+  });
+
+  // Timer
+  useEffect(() => {
+    if (answerStatus !== 'ANSWERING') return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [answerStatus]);
+
+  // Timer 만료
+  useEffect(() => {
+    if (answerStatus === 'ANSWERING' && timeLeft <= 0) {
+      setAnswerStatus('ANSWERED');
+      stopAnswer();
+    }
+  }, [timeLeft, answerStatus]);
+
+  // Permission
+  useEffect(() => {
+    if (answerStatus !== 'ANSWERING') return;
+
+    if (!cameraPermission || !micPermission) {
+      setAnswerStatus('ANSWERED');
+      stopAnswer();
+
+      toast.warning('권한이 변경되어 답변이 종료되었습니다.');
+    }
+  }, [cameraPermission, micPermission, answerStatus]);
+
+  const canAnswer = cameraPermission && micPermission && !isSubmitTurnPending;
+
+  const handleAnswerStart = () => {
+    if (answerStatus !== 'READY') return;
+    setAnswerStatus('ANSWERING');
+    startAnswer();
+  };
+
+  const handleAnswerStop = () => {
+    if (answerStatus !== 'ANSWERING') return;
+    setAnswerStatus('ANSWERED');
+    stopAnswer();
+  };
+
+  const handleNextTurn = (isFollowup: boolean) => {
+    if (!interviewInfo) return;
+    if (!faceMetrics || !voiceMetrics) {
+      toast.error('분석 데이터가 아직 준비되지 않았습니다.');
+      return;
+    }
+
+    submitTurn({
+      interviewId: interviewInfo.interviewId,
+      answerText,
+      turnIndex: interviewInfo.turnIndex,
+      answerDuration: INITIAL_TIME - timeLeft,
+      faceMetrics,
+      voiceMetrics,
+      isFollowupQuestion: isFollowup,
+    });
+  };
+
+  if (isSettingModalOpen) {
+    return (
+      <InterviewSettingModal
+        open
+        onCancel={() => navigate('/')}
+        onConfirm={() => {
+          setIsSettingModalOpen(false);
+        }}
+      />
+    );
+  }
+
+  if (!interviewInfo) {
+    return <Loader />;
+  }
+
   return (
     <div>
-      <InterviewHeader />
-
+      <InterviewHeader
+        currentTurn={interviewInfo.turnIndex}
+        maxTurn={MAX_TURN}
+      />
       <div className="mx-auto max-w-5xl px-10 py-6">
-        <Card className="mb-6">
-          <CardContent className="flex items-center gap-2 p-5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-sub1 font-semibold">
-              1
-            </span>
-            <span className="text-sub1 font-semibold">
-              자기소개를 해주세요.
-            </span>
-            <Badge variant="secondary">기본</Badge>
-          </CardContent>
-        </Card>
+        <QuestionCard interviewInfo={interviewInfo} />
 
         <div className="grid grid-cols-3 gap-6">
-          <Card className="col-span-2 h-[320px]">
-            <CardContent className="relative h-full p-0">
-              <div className="flex h-full items-center justify-center">
-                에이바 영역
-              </div>
-              <div className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg bg-muted px-3 py-1 shadow">
-                <TimerIcon className="h-5 w-5" />
-                01 : 30
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="h-[320px]">
-            <CardContent className="flex h-full items-center justify-center p-0">
-              사용자 얼굴 영역
-            </CardContent>
-          </Card>
-
-          <Card className="col-span-2 h-[100px]">
-            <CardContent className="flex h-full items-center justify-center p-0">
-              내 답변 영역
-            </CardContent>
-          </Card>
-
-          <Card className="h-[100px]">
-            <CardContent className="flex h-full items-center justify-center p-0">
-              목소리 파동 영역
-            </CardContent>
-          </Card>
+          <InterviewerAvaCard timeLeft={timeLeft} />
+          <UserFaceCard videoRef={videoRef} />
+          <UserAnswerCard answerStatus={answerStatus} answerText={answerText} />
+          <VoiceWaveCard voiceWave={voiceWave} />
         </div>
 
-        <div className="mt-8 flex justify-center gap-4">
-          <Button size="lg">
-            <PlayIcon className="h-6 w-6" />
-            답변 시작
-          </Button>
-          <Button variant="outline">꼬리 질문</Button>
-          <Button variant="outline">다음 질문</Button>
-        </div>
+        <InterviewControls
+          answerStatus={answerStatus}
+          canAnswer={canAnswer}
+          isSubmitting={isSubmitTurnPending}
+          isLastTurn={isLastTurn}
+          remainingFollowupCount={interviewInfo.remainingFollowupCount}
+          onAnswerStart={handleAnswerStart}
+          onAnswerStop={handleAnswerStop}
+          onNextTurn={handleNextTurn}
+        />
       </div>
     </div>
   );
