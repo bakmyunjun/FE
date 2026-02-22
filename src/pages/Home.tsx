@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useInterviewReports } from '@/hooks/queries/useInterviewReports';
+import { useMe } from '@/hooks/queries/useMe';
 
 import {
   TrendingUp,
@@ -17,7 +18,10 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
-  const { data, isLoading } = useInterviewReports({ page: 1, size: 10 });
+  const { data: user } = useMe();
+  const { data: reportsData, isLoading } = useInterviewReports({ page: 1, size: 10 });
+
+  const totalSessions = reportsData?.page.totalItems ?? 0;
 
   return (
     <div className="flex flex-col gap-3">
@@ -26,10 +30,10 @@ export default function Home() {
         <CardContent className="flex flex-row items-center gap-4 pt-6">
           <div className="h-14 w-14 rounded-full bg-gray-300" />
           <div>
-            <p className="text-xl font-bold">hochoi8621</p>
-            <p className="text-sm text-gray-200">hochoi8621@gmail.com</p>
+            <p className="text-xl font-bold">{user?.nickname ?? '-'}</p>
+            <p className="text-sm text-gray-200">{user?.email ?? '-'}</p>
             <p className="mt-1 text-sm text-gray-200">
-              총 5회 연습 · 평균 68점
+              총 {totalSessions}회 연습
             </p>
           </div>
         </CardContent>
@@ -101,8 +105,8 @@ export default function Home() {
         <section className="flex flex-col gap-4 p-6">
           {isLoading ? (
             <p className="text-center text-muted-foreground">로딩 중...</p>
-          ) : data?.items.length ? (
-            data.items.map((record) => (
+          ) : reportsData?.items.length ? (
+            reportsData.items.map((record) => (
               <InterviewRecordItem key={record.interviewId} record={record} />
             ))
           ) : (
