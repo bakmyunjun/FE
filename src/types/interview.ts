@@ -162,7 +162,7 @@ export interface TextPatternIssue {
 
 export interface PerTurnScore {
   turnIndex: number;
-  score: number;
+  score: number | null;
 }
 
 export interface TurnSuggestion {
@@ -179,8 +179,11 @@ export interface TurnHighlight {
 }
 
 export interface TurnMetrics {
+  questionId?: string;
   answerDuration: number;
   isFollowupQuestion: boolean;
+  faceMetrics?: FaceMetrics;
+  voiceMetrics?: VoiceMetrics;
 }
 
 export interface Turn {
@@ -188,9 +191,9 @@ export interface Turn {
   questionType: string;
   questionText: string;
   answerText: string;
-  score: number;
-  feedback: string;
-  highlight: TurnHighlight;
+  score: number | null;
+  feedback: string | null;
+  highlight: TurnHighlight | null;
   submittedAt: string;
   metrics: TurnMetrics;
 }
@@ -202,7 +205,7 @@ export interface ReportViewHeader {
 }
 
 export interface ReportViewSummary {
-  totalScore: number;
+  totalScore: number | null;
   strengths: string[];
   weaknesses: string[];
   competencies: Competency[];

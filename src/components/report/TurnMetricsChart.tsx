@@ -5,6 +5,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
+  Cell,
 } from 'recharts';
 import type { PerTurnScore } from '@/types/interview';
 
@@ -15,7 +16,8 @@ interface Props {
 export function TurnMetricsChart({ perTurnScores }: Props) {
   const data = perTurnScores.map((item) => ({
     turn: `Q${item.turnIndex}`,
-    score: item.score,
+    score: item.score ?? 0,
+    hasScore: item.score !== null,
   }));
 
   return (
@@ -35,12 +37,14 @@ export function TurnMetricsChart({ perTurnScores }: Props) {
           domain={[0, 100]}
           width={30}
         />
-        <Bar
-          dataKey="score"
-          name="점수"
-          fill="#3b82f6"
-          radius={[4, 4, 0, 0]}
-        />
+        <Bar dataKey="score" name="점수" radius={[4, 4, 0, 0]}>
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={entry.hasScore ? '#3b82f6' : '#d1d5db'}
+            />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
