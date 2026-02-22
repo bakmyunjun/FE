@@ -10,6 +10,14 @@ import type {
   SubTopicId,
   FaceMetrics,
   VoiceMetrics,
+  InterviewRecordsResponse,
+  InterviewRecord,
+  ScoreTrendResponse,
+  ScoreTrendItem,
+  ReportSummaryResponse,
+  ReportSummaryData,
+  ReportTurnMetricsResponse,
+  ReportTurnMetricItem,
 } from '@/types/interview';
 
 // ==========================================
@@ -114,6 +122,66 @@ export async function getInterviewReport(
 ): Promise<InterviewReportDetail> {
   const { data } = await axiosInstance.get<InterviewReportDetailResponse>(
     `/interviews/${interviewId}/report`,
+  );
+
+  return data.data;
+}
+
+// ==========================================
+// 홈 화면 API
+// ==========================================
+
+/**
+ * 홈 화면 - 면접 기록 목록 조회
+ * GET /interview/records
+ */
+export async function getInterviewRecords(): Promise<InterviewRecord[]> {
+  const { data } = await axiosInstance.get<InterviewRecordsResponse>(
+    '/interview/records',
+  );
+
+  return data.data;
+}
+
+/**
+ * 홈 화면 - 점수 추이 차트 조회
+ * GET /interview/score-trend
+ */
+export async function getScoreTrend(): Promise<ScoreTrendItem[]> {
+  const { data } = await axiosInstance.get<ScoreTrendResponse>(
+    '/interview/score-trend',
+  );
+
+  return data.data;
+}
+
+// ==========================================
+// 리포트 상세 API
+// ==========================================
+
+/**
+ * 리포트 - 종합 역량 분석
+ * GET /reports/{id}/summary
+ */
+export async function getReportSummary(
+  reportId: number,
+): Promise<ReportSummaryData> {
+  const { data } = await axiosInstance.get<ReportSummaryResponse>(
+    `/reports/${reportId}/summary`,
+  );
+
+  return data.data;
+}
+
+/**
+ * 리포트 - 턴별 지표
+ * GET /reports/{id}/turn-metrics
+ */
+export async function getReportTurnMetrics(
+  reportId: number,
+): Promise<ReportTurnMetricItem[]> {
+  const { data } = await axiosInstance.get<ReportTurnMetricsResponse>(
+    `/reports/${reportId}/turn-metrics`,
   );
 
   return data.data;

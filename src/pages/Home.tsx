@@ -5,7 +5,7 @@ import { StatCard } from '@/components/home/StatCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useInterviewReports } from '@/hooks/queries/useInterviewReports';
+import { useInterviewRecords } from '@/hooks/queries/useInterviewRecords';
 import { useMe } from '@/hooks/queries/useMe';
 
 import {
@@ -19,9 +19,16 @@ import {
 
 export default function Home() {
   const { data: user } = useMe();
-  const { data: reportsData, isLoading } = useInterviewReports({ page: 1, size: 10 });
+  const { data: records, isLoading } = useInterviewRecords();
 
-  const totalSessions = reportsData?.page.totalItems ?? 0;
+  const totalSessions = records?.length ?? 0;
+  const latestScore = records?.[0]?.score ?? 0;
+  const avgScore =
+    records && records.length > 0
+      ? Math.round(
+          records.reduce((sum, r) => sum + r.score, 0) / records.length,
+        )
+      : 0;
 
   return (
     <div className="flex flex-col gap-3">
@@ -41,23 +48,28 @@ export default function Home() {
 
       {/* 통계 카드 4개 */}
       <section className="grid grid-cols-4 gap-6">
-        <StatCard title="최근 점수" value="78" sub="+6점" icon={TrendingUp} />
+        <StatCard
+          title="최근 점수"
+          value={String(latestScore)}
+          sub={totalSessions > 1 ? `이전 대비` : '첫 세션'}
+          icon={TrendingUp}
+        />
         <StatCard
           title="평균 점수"
-          value="68"
+          value={String(avgScore)}
           sub="전체 세션 기준"
           icon={BarChart3}
         />
         <StatCard
           title="총 세션"
-          value="5"
+          value={String(totalSessions)}
           sub="완료된 연습"
           icon={CalendarDays}
         />
         <StatCard
           title="총 답변"
-          value="48"
-          sub="6개의 질문 완료"
+          value="-"
+          sub="질문 완료"
           icon={MessageSquare}
         />
       </section>
@@ -105,9 +117,9 @@ export default function Home() {
         <section className="flex flex-col gap-4 p-6">
           {isLoading ? (
             <p className="text-center text-muted-foreground">로딩 중...</p>
-          ) : reportsData?.items.length ? (
-            reportsData.items.map((record) => (
-              <InterviewRecordItem key={record.interviewId} record={record} />
+          ) : records?.length ? (
+            records.map((record) => (
+              <InterviewRecordItem key={record.id} record={record} />
             ))
           ) : (
             <p className="text-center text-muted-foreground">

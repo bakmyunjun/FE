@@ -6,18 +6,31 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from 'recharts';
-import type { Competency } from '@/types/interview';
+import type { ReportSummarySkills } from '@/types/interview';
 
 interface Props {
-  competencies: Competency[];
+  skills: ReportSummarySkills;
 }
 
-export function SummaryRadarChart({ competencies }: Props) {
-  const data = competencies.map((c) => ({
-    skill: c.label,
-    value: c.score,
-    fullMark: 100,
-  }));
+interface SkillRadarData {
+  skill: string;
+  value: number;
+  fullMark: number;
+}
+
+function getSkillRadarData(skills: ReportSummarySkills): SkillRadarData[] {
+  return [
+    { skill: '논리성', value: skills.logic, fullMark: 100 },
+    { skill: '구체성', value: skills.specificity, fullMark: 100 },
+    { skill: '전달력', value: skills.delivery, fullMark: 100 },
+    { skill: '시선', value: skills.eyeContact, fullMark: 100 },
+    { skill: '목소리', value: skills.voice, fullMark: 100 },
+    { skill: 'STAR', value: skills.structure, fullMark: 100 },
+  ];
+}
+
+export function SummaryRadarChart({ skills }: Props) {
+  const data = getSkillRadarData(skills);
 
   return (
     <ResponsiveContainer width="100%" height={240}>

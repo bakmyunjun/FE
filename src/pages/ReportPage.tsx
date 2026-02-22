@@ -18,6 +18,7 @@ type TabKey = (typeof TABS)[number]['key'];
 
 export default function Report() {
   const { id } = useParams<{ id: string }>();
+  const reportId = Number(id) || 0;
   const { data, isLoading } = useInterviewReport(id ?? '');
   const [activeTab, setActiveTab] = useState<TabKey>('summary');
 
@@ -68,8 +69,8 @@ export default function Report() {
 
         {/* 탭 콘텐츠 */}
         <div className="mt-6">
-          {activeTab === 'summary' && <Summary summary={view.summary} />}
-          {activeTab === 'analysis' && <Analysis analysis={view.analysis} />}
+          {activeTab === 'summary' && <Summary reportId={reportId} />}
+          {activeTab === 'analysis' && <Analysis reportId={reportId} />}
           {activeTab === 'coaching' && <Coaching coaching={view.coaching} />}
           {activeTab === 'record' && <Record record={view.record} />}
         </div>

@@ -119,7 +119,82 @@ export type VoiceMetrics = {
 };
 
 // ==========================================
-// 면접 리포트 목록 조회 타입
+// 홈 화면 - 면접 기록 목록 조회 타입
+// GET /interview/records
+// ==========================================
+
+export interface InterviewRecordMetrics {
+  logic: number;
+  clarity: number;
+  eyeContact: number;
+  voice: number;
+  star: number;
+  time: number;
+}
+
+export interface InterviewRecord {
+  id: number;
+  score: number;
+  date: string;
+  duration: string;
+  questionProgress: string;
+  strengths: string[];
+  improvements: string[];
+  metrics: InterviewRecordMetrics;
+}
+
+export type InterviewRecordsResponse = ApiResponse<InterviewRecord[]>;
+
+// ==========================================
+// 홈 화면 - 점수 추이 차트 타입
+// GET /interview/score-trend
+// ==========================================
+
+export interface ScoreTrendItem {
+  date: string;
+  score: number;
+}
+
+export type ScoreTrendResponse = ApiResponse<ScoreTrendItem[]>;
+
+// ==========================================
+// 리포트 - 종합 역량 분석 타입
+// GET /reports/{id}/summary
+// ==========================================
+
+export interface ReportSummarySkills {
+  logic: number;
+  specificity: number;
+  delivery: number;
+  eyeContact: number;
+  voice: number;
+  structure: number;
+}
+
+export interface ReportSummaryData {
+  skills: ReportSummarySkills;
+  strengths: string[];
+  improvements: string[];
+}
+
+export type ReportSummaryResponse = ApiResponse<ReportSummaryData>;
+
+// ==========================================
+// 리포트 - 턴별 지표 타입
+// GET /reports/{id}/turn-metrics
+// ==========================================
+
+export interface ReportTurnMetricItem {
+  question: string;
+  time: number;
+  eyeOff: number;
+  silence: number;
+}
+
+export type ReportTurnMetricsResponse = ApiResponse<ReportTurnMetricItem[]>;
+
+// ==========================================
+// 면접 리포트 목록 조회 타입 (기존)
 // ==========================================
 
 export interface InterviewReportItem {

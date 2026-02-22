@@ -51,7 +51,7 @@ export default function TurnItem({ turn }: Props) {
       )}
 
       {/* 하이라이트 */}
-      {hasHighlight && (
+      {turn.highlight && (
         <div className="mt-3 grid grid-cols-1 gap-2 text-xs md:grid-cols-3">
           <div className="rounded-md bg-green-50 p-2">
             <span className="font-medium text-green-700">강점:</span>{' '}

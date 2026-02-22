@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { SummaryRadarChart } from './SummaryRadarChart';
-import type { ReportViewSummary } from '@/types/interview';
+import { useReportSummary } from '@/hooks/queries/useReportSummary';
 
 interface Props {
-  summary: ReportViewSummary;
+  reportId: number;
 }
 
 function EmptyState({ message }: { message: string }) {
@@ -16,40 +16,40 @@ function EmptyState({ message }: { message: string }) {
   );
 }
 
-export default function Summary({ summary }: Props) {
-  const { totalScore, strengths, weaknesses, competencies } = summary;
+export default function Summary({ reportId }: Props) {
+  const { data: summary, isLoading } = useReportSummary(reportId);
 
-  const hasCompetencies = competencies.length > 0;
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-muted-foreground">로딩 중...</p>
+      </div>
+    );
+  }
+
+  if (!summary) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-muted-foreground">
+          종합 역량 분석 데이터를 불러올 수 없습니다.
+        </p>
+      </div>
+    );
+  }
+
+  const { skills, strengths, improvements } = summary;
+
   const hasStrengths = strengths.length > 0;
-  const hasWeaknesses = weaknesses.length > 0;
+  const hasImprovements = improvements.length > 0;
 
   return (
     <div className="flex flex-col gap-4">
-      {/* 총점 */}
-      {totalScore !== null && (
-        <Card>
-          <CardContent className="flex items-center gap-4 pt-6">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-2xl font-bold text-amber-600">
-              {Math.round(totalScore)}
-            </div>
-            <div>
-              <p className="text-lg font-semibold">총점</p>
-              <p className="text-sm text-muted-foreground">100점 만점</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       <div className="flex flex-row gap-4">
         {/* 역량 분석 차트 */}
         <Card className="w-full">
           <CardHeader className="font-semibold">종합 역량 분석</CardHeader>
           <CardContent>
-            {hasCompetencies ? (
-              <SummaryRadarChart competencies={competencies} />
-            ) : (
-              <EmptyState message="역량 분석 데이터가 아직 준비되지 않았습니다." />
-            )}
+            <SummaryRadarChart skills={skills} />
           </CardContent>
         </Card>
 
@@ -78,9 +78,9 @@ export default function Summary({ summary }: Props) {
               개선점
             </CardHeader>
             <CardContent>
-              {hasWeaknesses ? (
+              {hasImprovements ? (
                 <ul className="space-y-1 text-sm text-muted-foreground">
-                  {weaknesses.map((item, index) => (
+                  {improvements.map((item, index) => (
                     <li key={index}>• {item}</li>
                   ))}
                 </ul>

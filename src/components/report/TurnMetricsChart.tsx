@@ -5,27 +5,22 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  Cell,
+  Legend,
+  Tooltip,
 } from 'recharts';
-import type { PerTurnScore } from '@/types/interview';
+import type { ReportTurnMetricItem } from '@/types/interview';
 
 interface Props {
-  perTurnScores: PerTurnScore[];
+  turnMetrics: ReportTurnMetricItem[];
 }
 
-export function TurnMetricsChart({ perTurnScores }: Props) {
-  const data = perTurnScores.map((item) => ({
-    turn: `Q${item.turnIndex}`,
-    score: item.score ?? 0,
-    hasScore: item.score !== null,
-  }));
-
+export function TurnMetricsChart({ turnMetrics }: Props) {
   return (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data}>
+    <ResponsiveContainer width="100%" height={280}>
+      <BarChart data={turnMetrics}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
         <XAxis
-          dataKey="turn"
+          dataKey="question"
           axisLine={false}
           tickLine={false}
           tick={{ fontSize: 12, fill: '#666' }}
@@ -34,17 +29,28 @@ export function TurnMetricsChart({ perTurnScores }: Props) {
           axisLine={false}
           tickLine={false}
           tick={{ fontSize: 12, fill: '#666' }}
-          domain={[0, 100]}
           width={30}
         />
-        <Bar dataKey="score" name="점수" radius={[4, 4, 0, 0]}>
-          {data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={entry.hasScore ? '#3b82f6' : '#d1d5db'}
-            />
-          ))}
-        </Bar>
+        <Tooltip />
+        <Legend />
+        <Bar
+          dataKey="time"
+          name="답변 시간(초)"
+          fill="#3b82f6"
+          radius={[4, 4, 0, 0]}
+        />
+        <Bar
+          dataKey="eyeOff"
+          name="시선 이탈(%)"
+          fill="#f59e0b"
+          radius={[4, 4, 0, 0]}
+        />
+        <Bar
+          dataKey="silence"
+          name="침묵 비율(%)"
+          fill="#ef4444"
+          radius={[4, 4, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
   );
