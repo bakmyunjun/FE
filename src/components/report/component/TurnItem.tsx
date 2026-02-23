@@ -5,7 +5,6 @@ interface Props {
 }
 
 export default function TurnItem({ turn }: Props) {
-  const hasScore = turn.score !== null;
   const hasFeedback = turn.feedback !== null;
   const hasHighlight = turn.highlight !== null;
   const questionTypeLabel =
