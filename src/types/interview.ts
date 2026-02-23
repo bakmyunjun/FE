@@ -134,8 +134,10 @@ export interface InterviewRecordMetrics {
 
 export interface InterviewRecord {
   id: number;
+  interviewId: string;
   score: number;
   date: string;
+  title: string;
   duration: string;
   questionProgress: string;
   strengths: string[];

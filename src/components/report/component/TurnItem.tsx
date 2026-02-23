@@ -8,7 +8,8 @@ export default function TurnItem({ turn }: Props) {
   const hasScore = turn.score !== null;
   const hasFeedback = turn.feedback !== null;
   const hasHighlight = turn.highlight !== null;
-  const questionTypeLabel = turn.questionType === 'followup' ? '꼬리질문' : '기본질문';
+  const questionTypeLabel =
+    turn.questionType === 'followup' ? '꼬리질문' : '기본질문';
 
   return (
     <div className="rounded-lg border p-4">
@@ -25,15 +26,6 @@ export default function TurnItem({ turn }: Props) {
             </p>
           </div>
         </div>
-        {hasScore ? (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-600">
-            {turn.score}
-          </div>
-        ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs text-gray-400">
-            -
-          </div>
-        )}
       </div>
 
       {/* 답변 */}

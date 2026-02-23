@@ -9,7 +9,7 @@ interface Props {
 
 export function InterviewRecordItem({ record }: Props) {
   return (
-    <Link to={`/report/${record.id}`}>
+    <Link to={`/report/${record.interviewId}`} state={{ reportId: record.id }}>
       <Card className="p-6 transition-colors hover:bg-muted/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -21,7 +21,7 @@ export function InterviewRecordItem({ record }: Props) {
             {/* 정보 */}
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-semibold">{record.date}</p>
+                <p className="font-semibold">{record.title || record.date}</p>
                 <span className="text-sm text-muted-foreground">
                   {record.duration}
                 </span>

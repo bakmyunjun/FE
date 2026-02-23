@@ -5,7 +5,7 @@ import ReportHeader from '@/components/report/ReportHeader';
 import Summary from '@/components/report/Summary';
 import { useInterviewReport } from '@/hooks/queries/useInterviewReport';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const TABS = [
   { key: 'summary', label: '종합 요약' },
@@ -17,9 +17,10 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key'];
 
 export default function Report() {
-  const { id } = useParams<{ id: string }>();
-  const reportId = Number(id) || 0;
-  const { data, isLoading } = useInterviewReport(id ?? '');
+  const { id: interviewId } = useParams<{ id: string }>();
+  const location = useLocation();
+  const reportId = (location.state as { reportId?: number })?.reportId ?? 0;
+  const { data, isLoading } = useInterviewReport(interviewId ?? '');
   const [activeTab, setActiveTab] = useState<TabKey>('summary');
 
   if (isLoading) {
