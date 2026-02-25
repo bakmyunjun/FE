@@ -19,7 +19,7 @@ import {
 
 export default function Home() {
   const { data: user } = useMe();
-  const { data: records, isLoading } = useInterviewRecords();
+  const { data: records, isLoading, isError } = useInterviewRecords();
 
   const totalSessions = records?.length ?? 0;
   const latestScore = records?.[0]?.score ?? 0;
@@ -29,7 +29,7 @@ export default function Home() {
           records.reduce((sum, r) => sum + r.score, 0) / records.length,
         )
       : 0;
-  const totalAnswer = records?.[0].questionProgress.split(' ')[0];
+  const totalAnswer = records?.[0]?.questionProgress?.split(' ')[0] ?? '0';
 
   return (
     <div className="flex flex-col gap-3">
@@ -118,6 +118,10 @@ export default function Home() {
         <section className="flex flex-col gap-4 p-6">
           {isLoading ? (
             <p className="text-center text-muted-foreground">로딩 중...</p>
+          ) : isError ? (
+            <p className="text-center text-destructive">
+              데이터를 불러오는 중 오류가 발생했습니다.
+            </p>
           ) : records?.length ? (
             records.map((record) => (
               <InterviewRecordItem key={record.id} record={record} />

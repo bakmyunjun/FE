@@ -15,6 +15,14 @@ interface Props {
 }
 
 export function TurnMetricsChart({ turnMetrics }: Props) {
+  if (turnMetrics.length === 0) {
+    return (
+      <div className="flex h-[280px] items-center justify-center">
+        <p className="text-sm text-muted-foreground">데이터가 없습니다.</p>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={turnMetrics}>

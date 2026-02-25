@@ -7,11 +7,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import TopicSelector from '../interview/TopicSelector';
 import { useState } from 'react';
-import { useCreateInterview } from '@/hooks/mutations/useCreateInterview';
-import { usePermissionsStore } from '@/stores/permissionsStore';
+import { useStartInterview } from '@/hooks/useStartInterview';
 import type { MainTopicId, SubTopicId } from '@/types/interview';
 
 type Props = {
@@ -29,19 +27,10 @@ export default function InterviewSettingModal({
   const [mainTopicId, setMainTopicId] = useState<MainTopicId | null>(null);
   const [subTopicIds, setSubTopicIds] = useState<SubTopicId[]>([]);
 
-  const { mutate: createInterview, isPending: isCreateInterviewPending } =
-    useCreateInterview({
-      onSuccess: () => {
-        onConfirm();
-      },
-      onError: () => {
-        console.error('[Interview] 면접 생성 실패');
-        toast.error('면접 생성에 문제가 발생했습니다.', {
-          position: 'top-center',
-        });
-        onCancel();
-      },
-    });
+  const { startInterview, isPending } = useStartInterview({
+    onSuccess: onConfirm,
+    onError: onCancel,
+  });
 
   const handleSelectMainTopic = (id: MainTopicId) => {
     setMainTopicId(id);
@@ -54,40 +43,9 @@ export default function InterviewSettingModal({
     );
   };
 
-  const { setCameraPermission, setMicPermission } = usePermissionsStore();
-
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!mainTopicId) return;
-
-    // 카메라/마이크 권한 요청
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-
-      // 권한 허용됨 - 스토어 업데이트
-      setCameraPermission(true);
-      setMicPermission(true);
-
-      // 스트림 정리 (실제 사용은 InterviewPage에서)
-      for (const track of stream.getTracks()) {
-        track.stop();
-      }
-
-      // 면접 생성
-      createInterview({
-        title,
-        mainTopicId,
-        subTopicIds,
-      });
-    } catch (err) {
-      console.error('권한 요청 실패:', err);
-      toast.error('카메라와 마이크 권한이 필요합니다.', {
-        description: '브라우저 설정에서 권한을 허용해주세요.',
-        position: 'top-center',
-      });
-    }
+    startInterview({ title, mainTopicId, subTopicIds });
   };
 
   const isConfirmEnabled = mainTopicId !== null && subTopicIds.length > 0;
@@ -129,7 +87,7 @@ export default function InterviewSettingModal({
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={!isConfirmEnabled || isCreateInterviewPending}
+            disabled={!isConfirmEnabled || isPending}
           >
             확인
           </Button>
