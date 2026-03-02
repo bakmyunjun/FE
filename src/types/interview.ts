@@ -245,8 +245,8 @@ export interface PerTurnScore {
 export interface TurnSuggestion {
   turnIndex: number;
   question: string;
-  weakness: string;
-  suggestion: string;
+  weakness: string | null;
+  suggestion: string | null;
 }
 
 export interface TurnHighlight {
@@ -271,14 +271,14 @@ export interface Turn {
   score: number | null;
   feedback: string | null;
   highlight: TurnHighlight | null;
-  submittedAt: string;
+  submittedAt: string | null;
   metrics: TurnMetrics;
 }
 
 export interface ReportViewHeader {
   title: string;
   summary: string;
-  generatedAt: string;
+  generatedAt: string | null;
 }
 
 export interface ReportViewSummary {
@@ -317,21 +317,23 @@ export interface ReportResult {
 }
 
 export interface Report {
-  status: 'done' | 'processing' | 'pending';
+  reportId?: number | null;
+  status: 'analyzing' | 'done' | 'failed' | 'processing' | 'pending';
   totalScore: number;
   durationSec: number;
   model: string;
   promptVersion: string;
   generatedAt: string;
   result: ReportResult;
-  view: ReportView;
+  view?: ReportView;
 }
 
 export interface InterviewReportDetail {
   interviewId: string;
+  reportId?: number | null;
   title: string;
-  interviewStatus: 'DONE' | 'IN_PROGRESS' | 'PENDING';
-  report: Report;
+  interviewStatus: 'DONE' | 'IN_PROGRESS' | 'ANALYZING' | 'FAILED' | 'PENDING';
+  report: Report | null;
 }
 
 export type InterviewReportDetailResponse = ApiResponse<InterviewReportDetail>;

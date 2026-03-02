@@ -5,7 +5,7 @@ import ReportHeader from '@/components/report/ReportHeader';
 import Summary from '@/components/report/Summary';
 import { useInterviewReport } from '@/hooks/queries/useInterviewReport';
 import { useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const TABS = [
   { key: 'summary', label: '종합 요약' },
@@ -18,8 +18,6 @@ type TabKey = (typeof TABS)[number]['key'];
 
 export default function Report() {
   const { id: interviewId } = useParams<{ id: string }>();
-  const location = useLocation();
-  const reportId = (location.state as { reportId?: number })?.reportId ?? 0;
   const { data, isLoading } = useInterviewReport(interviewId ?? '');
   const [activeTab, setActiveTab] = useState<TabKey>('summary');
 
@@ -39,7 +37,16 @@ export default function Report() {
     );
   }
 
+  const reportId = data.reportId ?? data.report?.reportId ?? 0;
   const { report } = data;
+  if (!report?.view) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-muted-foreground">리포트 분석이 진행 중입니다.</p>
+      </div>
+    );
+  }
+
   const { view } = report;
 
   return (

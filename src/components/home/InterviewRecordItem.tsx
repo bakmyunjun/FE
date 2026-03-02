@@ -9,7 +9,7 @@ interface Props {
 
 export function InterviewRecordItem({ record }: Props) {
   return (
-    <Link to={`/report/${record.interviewId}`} state={{ reportId: record.id }}>
+    <Link to={`/report/${record.interviewId}`}>
       <Card className="p-6 transition-colors hover:bg-muted/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
