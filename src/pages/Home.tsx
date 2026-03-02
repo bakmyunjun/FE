@@ -1,10 +1,12 @@
 import { InterviewRecordItem } from '@/components/home/InterviewRecordItem';
-
+import { ScoreTrendChart } from '@/components/home/ScoreTrendChart';
+import { SkillRadarChart } from '@/components/home/SkillRadarChart';
 import { StatCard } from '@/components/home/StatCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { interviewRecords } from '@/lib/mock';
+import { useInterviewRecords } from '@/hooks/queries/useInterviewRecords';
+import { useMe } from '@/hooks/queries/useMe';
 
 import {
   TrendingUp,
@@ -16,6 +18,19 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+  const { data: user } = useMe();
+  const { data: records, isLoading, isError } = useInterviewRecords();
+
+  const totalSessions = records?.length ?? 0;
+  const latestScore = records?.[0]?.score ?? 0;
+  const avgScore =
+    records && records.length > 0
+      ? Math.round(
+          records.reduce((sum, r) => sum + r.score, 0) / records.length,
+        )
+      : 0;
+  const totalAnswer = records?.[0]?.questionProgress?.split(' ')[0] ?? '0';
+
   return (
     <div className="flex flex-col gap-3">
       {/* 프로필 요약 */}
@@ -23,10 +38,10 @@ export default function Home() {
         <CardContent className="flex flex-row items-center gap-4 pt-6">
           <div className="h-14 w-14 rounded-full bg-gray-300" />
           <div>
-            <p className="text-xl font-bold">hochoi8621</p>
-            <p className="text-sm text-gray-200">hochoi8621@gmail.com</p>
+            <p className="text-xl font-bold">{user?.nickname ?? '-'}</p>
+            <p className="text-sm text-gray-200">{user?.email ?? '-'}</p>
             <p className="mt-1 text-sm text-gray-200">
-              총 5회 연습 · 평균 68점
+              총 {totalSessions}회 연습
             </p>
           </div>
         </CardContent>
@@ -34,23 +49,28 @@ export default function Home() {
 
       {/* 통계 카드 4개 */}
       <section className="grid grid-cols-4 gap-6">
-        <StatCard title="최근 점수" value="78" sub="+6점" icon={TrendingUp} />
+        <StatCard
+          title="최근 점수"
+          value={String(latestScore)}
+          sub={totalSessions > 1 ? `이전 대비` : '첫 세션'}
+          icon={TrendingUp}
+        />
         <StatCard
           title="평균 점수"
-          value="68"
+          value={String(avgScore)}
           sub="전체 세션 기준"
           icon={BarChart3}
         />
         <StatCard
           title="총 세션"
-          value="5"
+          value={String(totalSessions)}
           sub="완료된 연습"
           icon={CalendarDays}
         />
         <StatCard
           title="총 답변"
-          value="48"
-          sub="6개의 질문 완료"
+          value={String(totalAnswer)}
+          sub="질문 완료"
           icon={MessageSquare}
         />
       </section>
@@ -60,14 +80,14 @@ export default function Home() {
         <Card>
           <CardHeader className="font-semibold">점수 추이</CardHeader>
           <CardContent>
-            <div className="h-[240px] rounded-md bg-gray-100" />
+            <ScoreTrendChart />
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="font-semibold">최근 섹션 역량 분석</CardHeader>
+          <CardHeader className="font-semibold">최근 세션 역량 분석</CardHeader>
           <CardContent>
-            <div className="h-[240px] rounded-md bg-gray-100" />
+            <SkillRadarChart />
           </CardContent>
         </Card>
       </section>
@@ -96,9 +116,21 @@ export default function Home() {
         </CardHeader>
         {/* 면접 기록*/}
         <section className="flex flex-col gap-4 p-6">
-          {interviewRecords.map((record) => (
-            <InterviewRecordItem key={record.id} record={record} />
-          ))}
+          {isLoading ? (
+            <p className="text-center text-muted-foreground">로딩 중...</p>
+          ) : isError ? (
+            <p className="text-center text-destructive">
+              데이터를 불러오는 중 오류가 발생했습니다.
+            </p>
+          ) : records?.length ? (
+            records.map((record) => (
+              <InterviewRecordItem key={record.id} record={record} />
+            ))
+          ) : (
+            <p className="text-center text-muted-foreground">
+              면접 기록이 없습니다.
+            </p>
+          )}
         </section>
       </Card>
     </div>
