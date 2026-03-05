@@ -58,7 +58,7 @@ export default function InterviewPage() {
         });
         setTimeout(() => {
           navigate('/');
-        }, 3000);
+        }, 4000);
         return;
       }
 
