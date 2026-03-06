@@ -37,6 +37,7 @@ export default function InterviewPage() {
   const [isSettingModalOpen, setIsSettingModalOpen] = useState(true);
   const [answerStatus, setAnswerStatus] = useState<AnswerStatus>('READY');
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const {
     answerText,
@@ -51,10 +52,13 @@ export default function InterviewPage() {
   const { mutate: submitTurn, isPending: isSubmitTurnPending } = useSubmitTurn({
     onSuccess: () => {
       if (isLastTurn) {
+        setIsCompleted(true);
         toast.success('수고하셨습니다!', {
           description: '면접 결과를 확인해보세요.',
         });
-        navigate(`/report/${interviewInfo?.interviewId}`);
+        setTimeout(() => {
+          navigate('/');
+        }, 4000);
         return;
       }
 
@@ -147,6 +151,10 @@ export default function InterviewPage() {
 
   if (!interviewInfo) {
     return <Loader />;
+  }
+
+  if (isCompleted) {
+    return <Loader message="면접 결과를 분석 중입니다..." />;
   }
 
   return (
