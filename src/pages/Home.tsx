@@ -1,13 +1,14 @@
-import { InterviewRecordItem } from '@/components/home/InterviewRecordItem';
-import { ScoreTrendChart } from '@/components/home/ScoreTrendChart';
-import { SkillRadarChart } from '@/components/home/SkillRadarChart';
-import { StatCard } from '@/components/home/StatCard';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useInterviewRecords } from '@/hooks/queries/useInterviewRecords';
+import { Button } from '@/components/ui/button';
+import { InterviewRecordItem } from '@/components/home/InterviewRecordItem';
+import { StatCard } from '@/components/home/StatCard';
+import { ScoreTrendChart } from '@/components/home/ScoreTrendChart';
+import { SkillRadarChart } from '@/components/home/SkillRadarChart';
+import RecordPagination from '@/components/report/component/RecordPagination';
+import { useState } from 'react';
 import { useMe } from '@/hooks/queries/useMe';
-
+import { useInterviewRecords } from '@/hooks/queries/useInterviewRecords';
 import {
   TrendingUp,
   BarChart3,
@@ -17,12 +18,17 @@ import {
   Filter,
 } from 'lucide-react';
 
+const PAGE_SIZE = 10;
+
 export default function Home() {
   const { data: user } = useMe();
   const { data: records, isLoading, isError } = useInterviewRecords();
 
+  const [page, setPage] = useState(1);
+
   const totalSessions = records?.length ?? 0;
   const latestScore = records?.[0]?.score ?? 0;
+
   const avgScore =
     records && records.length > 0
       ? Math.round(
@@ -30,6 +36,11 @@ export default function Home() {
         )
       : 0;
   const totalAnswer = records?.[0]?.questionProgress?.split(' ')[0] ?? '0';
+
+  // pagination
+  const totalPages = records ? Math.ceil(records.length / PAGE_SIZE) : 1;
+  const start = (page - 1) * PAGE_SIZE;
+  const visibleRecords = records?.slice(start, start + PAGE_SIZE) ?? [];
 
   return (
     <div className="flex flex-col gap-3">
@@ -58,7 +69,7 @@ export default function Home() {
         <StatCard
           title="평균 점수"
           value={String(avgScore)}
-          sub="전체 세션 기준"
+          sub="전체 연습 기준"
           icon={BarChart3}
         />
         <StatCard
@@ -70,7 +81,7 @@ export default function Home() {
         <StatCard
           title="총 답변"
           value={String(totalAnswer)}
-          sub="질문 완료"
+          sub="완료한 질문"
           icon={MessageSquare}
         />
       </section>
@@ -114,7 +125,7 @@ export default function Home() {
             </Button>
           </div>
         </CardHeader>
-        {/* 면접 기록*/}
+
         <section className="flex flex-col gap-4 p-6">
           {isLoading ? (
             <p className="text-center text-muted-foreground">로딩 중...</p>
@@ -123,13 +134,21 @@ export default function Home() {
               데이터를 불러오는 중 오류가 발생했습니다.
             </p>
           ) : records?.length ? (
-            records.map((record) => (
+            visibleRecords.map((record) => (
               <InterviewRecordItem key={record.id} record={record} />
             ))
           ) : (
             <p className="text-center text-muted-foreground">
               면접 기록이 없습니다.
             </p>
+          )}
+
+          {totalPages > 1 && (
+            <RecordPagination
+              currentPage={page}
+              totalPages={totalPages}
+              onChange={setPage}
+            />
           )}
         </section>
       </Card>
