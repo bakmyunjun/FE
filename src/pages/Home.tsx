@@ -13,6 +13,7 @@ import { ScoreTrendChart } from '@/components/home/ScoreTrendChart';
 import { SkillRadarChart } from '@/components/home/SkillRadarChart';
 import RecordPagination from '@/components/report/component/RecordPagination';
 import { useMemo, useState } from 'react';
+import { useAuthStore } from '@/stores/authStore';
 import { useMe } from '@/hooks/queries/useMe';
 import { useInterviewRecords } from '@/hooks/queries/useInterviewRecords';
 import {
@@ -74,15 +75,24 @@ export default function Home() {
     <div className="flex flex-col gap-3">
       {/* 프로필 요약 */}
       <Card className="bg-gradient-to-b from-neutral-800 to-neutral-500 text-white">
-        <CardContent className="flex flex-row items-center gap-4 pt-6">
-          <div className="h-14 w-14 rounded-full bg-gray-300" />
-          <div>
-            <p className="text-xl font-bold">{user?.nickname ?? '-'}</p>
-            <p className="text-sm text-gray-200">{user?.email ?? '-'}</p>
-            <p className="mt-1 text-sm text-gray-200">
-              총 {totalSessions}회 연습
-            </p>
+        <CardContent className="flex items-center justify-between p-8">
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 rounded-full bg-gray-300" />
+            <div>
+              <p className="text-sub1 font-bold">{user?.nickname ?? '-'}</p>
+              <p className="text-body2 text-gray-200">{user?.email ?? '-'}</p>
+              <p className="mt-1 text-body2 text-gray-200">
+                총 {totalSessions}회 연습
+              </p>
+            </div>
           </div>
+          <Button
+            onClick={() => {
+              useAuthStore.getState().logout();
+            }}
+          >
+            로그아웃
+          </Button>
         </CardContent>
       </Card>
 
