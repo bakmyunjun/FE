@@ -1,6 +1,12 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { InterviewRecordItem } from '@/components/home/InterviewRecordItem';
 import { StatCard } from '@/components/home/StatCard';
 import { ScoreTrendChart } from '@/components/home/ScoreTrendChart';
@@ -16,6 +22,7 @@ import {
   MessageSquare,
   SearchIcon,
   Filter,
+  Check,
 } from 'lucide-react';
 
 const PAGE_SIZE = 10;
@@ -26,6 +33,7 @@ export default function Home() {
 
   const [page, setPage] = useState(1);
   const [searchWord, setSearchWord] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const totalSessions = records?.length ?? 0;
   const latestScore = records?.[0]?.score ?? 0;
@@ -47,10 +55,20 @@ export default function Home() {
     );
   }, [records, searchWord]);
 
+  // sort filter
+  const sortedRecords = useMemo(() => {
+    return [...filteredRecords].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+  }, [filteredRecords, sortOrder]);
+
   // pagination
-  const totalPages = Math.ceil(filteredRecords.length / PAGE_SIZE);
+  const totalPages = Math.ceil(sortedRecords.length / PAGE_SIZE);
   const start = (page - 1) * PAGE_SIZE;
-  const visibleRecords = filteredRecords.slice(start, start + PAGE_SIZE);
+  const visibleRecords = sortedRecords.slice(start, start + PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-3">
@@ -133,10 +151,39 @@ export default function Home() {
             </div>
 
             {/* 필터*/}
-            <Button variant="outline" className="flex h-9 items-center gap-2">
-              <Filter className="h-4 w-4" />
-              전체
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex h-9 items-center gap-2"
+                >
+                  <Filter className="h-4 w-4" />
+                  정렬
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSortOrder('desc');
+                    setPage(1);
+                  }}
+                  className="flex justify-between"
+                >
+                  내림차순
+                  {sortOrder === 'desc' && <Check className="h-4 w-4" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSortOrder('asc');
+                    setPage(1);
+                  }}
+                  className="flex justify-between"
+                >
+                  오름차순
+                  {sortOrder === 'asc' && <Check className="h-4 w-4" />}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardHeader>
 
