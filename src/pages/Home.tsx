@@ -6,7 +6,7 @@ import { StatCard } from '@/components/home/StatCard';
 import { ScoreTrendChart } from '@/components/home/ScoreTrendChart';
 import { SkillRadarChart } from '@/components/home/SkillRadarChart';
 import RecordPagination from '@/components/report/component/RecordPagination';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMe } from '@/hooks/queries/useMe';
 import { useInterviewRecords } from '@/hooks/queries/useInterviewRecords';
 import {
@@ -25,6 +25,7 @@ export default function Home() {
   const { data: records, isLoading, isError } = useInterviewRecords();
 
   const [page, setPage] = useState(1);
+  const [searchWord, setSearchWord] = useState('');
 
   const totalSessions = records?.length ?? 0;
   const latestScore = records?.[0]?.score ?? 0;
@@ -37,10 +38,19 @@ export default function Home() {
       : 0;
   const totalAnswer = records?.[0]?.questionProgress?.split(' ')[0] ?? '0';
 
+  // search
+  const filteredRecords = useMemo(() => {
+    if (!records) return [];
+
+    return records.filter((record) =>
+      record.title.toLowerCase().includes(searchWord.toLowerCase()),
+    );
+  }, [records, searchWord]);
+
   // pagination
-  const totalPages = records ? Math.ceil(records.length / PAGE_SIZE) : 1;
+  const totalPages = Math.ceil(filteredRecords.length / PAGE_SIZE);
   const start = (page - 1) * PAGE_SIZE;
-  const visibleRecords = records?.slice(start, start + PAGE_SIZE) ?? [];
+  const visibleRecords = filteredRecords.slice(start, start + PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-3">
@@ -111,9 +121,13 @@ export default function Home() {
             {/* 검색 */}
             <div className="relative">
               <Input
-                type="text"
-                placeholder="검색..."
                 className="h-9 w-[180px] pl-9 pr-3 text-sm shadow-none"
+                type="text"
+                onChange={(e) => {
+                  setSearchWord(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="레포트 제목 검색..."
               />
               <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -133,14 +147,20 @@ export default function Home() {
             <p className="text-center text-destructive">
               데이터를 불러오는 중 오류가 발생했습니다.
             </p>
-          ) : records?.length ? (
-            visibleRecords.map((record) => (
-              <InterviewRecordItem key={record.id} record={record} />
-            ))
-          ) : (
+          ) : !records?.length ? (
             <p className="text-center text-muted-foreground">
               면접 기록이 없습니다.
             </p>
+          ) : !filteredRecords.length ? (
+            <p className="text-center text-muted-foreground">
+              "{searchWord}"에 대한 검색 결과가 없습니다.
+            </p>
+          ) : (
+            <>
+              {visibleRecords.map((record) => (
+                <InterviewRecordItem key={record.id} record={record} />
+              ))}
+            </>
           )}
 
           {totalPages > 1 && (
