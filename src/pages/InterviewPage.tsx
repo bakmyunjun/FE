@@ -14,6 +14,7 @@ import { usePermissionsStore } from '@/stores/permissionsStore';
 import { useSyncPermissions } from '@/hooks/useSyncPermissions';
 import { useInterviewAnswer } from '@/hooks/useInterviewAnswer';
 import { useSubmitTurn } from '@/hooks/mutations/useNextTurn';
+import { interviewRecordsKeys } from '@/hooks/queries/useInterviewRecords';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/constants';
 import type { InterviewInfo, AnswerStatus } from '@/types/interview';
@@ -53,12 +54,19 @@ export default function InterviewPage() {
     onSuccess: () => {
       if (isLastTurn) {
         setIsCompleted(true);
+
+        queryClient.invalidateQueries({
+          queryKey: interviewRecordsKeys.all,
+        });
+
         toast.success('수고하셨습니다!', {
           description: '면접 결과를 확인해보세요.',
         });
+
         setTimeout(() => {
           navigate('/');
         }, 4000);
+
         return;
       }
 
